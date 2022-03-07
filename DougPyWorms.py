@@ -374,13 +374,13 @@ class worms:
 
         # loop until collision
         while run:
-            clock.tick(60)
+            print('clock.tick: ', str(clock.tick(60)))
             player_rect1.bottom += worms.speedVar.get()
 
             collide = pygame.Rect.colliderect(player_rect1, player_rect2)
             # if screenWidth
             # if screenHeight
-            print('>>', player_rect2.bottom,  player_rect1.top)
+            print('>>', player_rect2.bottom, player_rect1.top)
             if collide:
                 run = False
 
