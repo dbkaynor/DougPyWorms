@@ -5,20 +5,20 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python C++ Debugger",
-            "type": "pythoncpp",
+            "name": "Python: Current File",
+            "type": "python",
             "request": "launch",
-            "pythonConfig": "default",
-            "cppConfig": "!!pick 'default (win) Attach' or 'default (gdb) Attach'"
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true
         },
         {
             "name": "Python C++ Debugger",
             "type": "pythoncpp",
             "request": "launch",
             "pythonConfig": "default",
-            "cppConfig": "!!pick 'default (win) Attach' or 'default (gdb) Attach'"
+            "cppConfig": "default (win) Attach"
         },
-
         {
             "args": [
                 "--extensionDevelopmentPath=${workspaceFolder}"
@@ -36,8 +36,9 @@
             "type": "python",
             "request": "launch",
             "program": "${file}",
-            "cwd": "C:\\Users\\dbkaynox\\DougPython",
-            "console": "integratedTerminal"
+            "cwd": "C:\\Users\\dbkaynox\\DougPython\\DougPyWorms\\",
+            "internalConsoleOptions": "openOnSessionStart",
+            "redirectOutput": true
         }
     ]
 }

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import tkinter
-from tkinter import *
+# from tkinter import *
 
 
 # ------------------------------
@@ -48,7 +48,8 @@ class ToolTip:
 
     def configure(self, **opts):
         for key in opts:
-            if self._opts.has_key(key):
+            # if self._opts.has_key(key):
+            if key in self._opts.has_key:
                 self._opts[key] = opts[key]
             else:
                 KeyError = 'KeyError: Unknown option: "%s"' % key
@@ -160,8 +161,8 @@ class ToolTip:
 
 if __name__ == '__main__':
 
-    tk = Tk()
-    tst = Label(tk, text='This is a test of the tooltip module')
+    tk = tkinter.Tk()
+    tst = tkinter.Label(tk, text='This is a test of the tooltip module')
     tst.pack()
     ToolTip(tst, 'You should see a tooltip')
 
