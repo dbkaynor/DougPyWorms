@@ -1,17 +1,26 @@
 {
     "cSpell.words": [
         "blit",
-        "countinuously",
+        "continuously",
         "gorx",
-        "Initialising",
+        "Initializing",
         "onvalue",
         "pyautogui",
         "pygame",
-        "verticle"
+        "vertical",
+        "Kaynor",
+        "dbkaynor"
     ],
     "editor.fontSize": 8,
     "editor.renderWhitespace": "all",
     "editor.bracketPairColorization.enabled": true,
-    "editor.defaultFormatter": "njpwerner.autodocstring",
-    "editor.suggest.showStatusBar": true
+    "editor.defaultFormatter": null,
+    "editor.suggest.showStatusBar": true,
+    "python.analysis.extraPaths": [
+        "${workspaceFolder}",
+        "C:\\Users\\dbkaynox\\DougPython\\DougPyWorms\\",
+        "C:\\Users\\dbkaynox\\DougPython\\DougPyCircles\\",
+        ".",
+        ".."
+    ]
 }

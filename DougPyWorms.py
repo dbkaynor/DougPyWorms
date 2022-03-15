@@ -31,16 +31,15 @@ from pygame.locals import Rect
 from screeninfo import get_monitors
 
 from ToolTip import ToolTip
-
-if platform.system() == "Windows":
-    os.environ["SDL_VIDEODRIVER"] = "windib"
 import pprint
 
 # Clear the terminal at progarm startup
 os.system('cls||clear')
 
-debugMode = True
 pp = pprint.PrettyPrinter(indent=4)
+
+if platform.system() == "Windows":
+    os.environ["SDL_VIDEODRIVER"] = "windib"
 
 # This positioning is for testing purposes
 if platform.system() == "Windows":
@@ -56,14 +55,13 @@ else:
     print("Unknown platform: " + platform.system())
     exit()
 
-tkRoot = 0
-
 pygame.init()
 pygame.display.init()
 for event in pygame.event.get():
     if event.type == pygame.WINDOWRESIZED:
         print('resize')
 
+debugMode = True
 gettrace = getattr(sys, "gettrace", None)
 print(gettrace)
 if gettrace is None:
@@ -79,6 +77,10 @@ else:
         print(" __name__", __name__)
 
 clock = pygame.time.Clock()
+# https://www.pygame.org/docs/ref/event.html
+for event in pygame.event.get():
+    if event.type == pygame.WINDOWRESIZED:
+        print('resize')
 
 
 class worms:
@@ -97,7 +99,6 @@ class worms:
     backgroundColor = "black"
 
     def main():
-        global tkRoot
         global screenPosVertical
         global screenPosHorizontal
         global debugMode
@@ -121,7 +122,7 @@ class worms:
         worms.tkRoot.geometry(geometry)
         worms.tkRoot.resizable(height=False, width=False)
         worms.tkRoot.title("Draw some worms")
-        main_dialog = tkinter.Frame(tkRoot)
+        main_dialog = tkinter.Frame(worms.tkRoot)
         main_dialog.pack(side=tkinter.TOP, fill=tkinter.X)
         print("dirname:    ", os.path.dirname(__file__))
         photo = tkinter.PhotoImage(
@@ -132,7 +133,7 @@ class worms:
         worms.setUp()
         # #######################################
         drawWormsButton = tkinter.Button(
-            tkRoot,
+            worms.tkRoot,
             text="Draw",
             fg="blue",
             bg="white",
@@ -143,7 +144,7 @@ class worms:
         ToolTip(drawWormsButton, text="Draw worms")
         # #######################################
         clearScreenButton = tkinter.Button(
-            tkRoot,
+            worms.tkRoot,
             text="Clear",
             fg="blue",
             bg="white",
@@ -154,7 +155,7 @@ class worms:
         ToolTip(clearScreenButton, text="Clear display")
         # #######################################
         selectScreenFillButton = tkinter.Button(
-            tkRoot,
+            worms.tkRoot,
             text="Select background color",
             fg="blue",
             bg="white",
@@ -165,7 +166,7 @@ class worms:
         ToolTip(selectScreenFillButton, text="Select background color")
         # #######################################
         randomScreenFillButton = tkinter.Button(
-            tkRoot,
+            worms.tkRoot,
             text="Random background color",
             fg="blue",
             bg="white",
@@ -176,7 +177,7 @@ class worms:
         ToolTip(randomScreenFillButton, text="Random background color")
         # #######################################
         selectForegroundColorButton = tkinter.Button(
-            tkRoot,
+            worms.tkRoot,
             text="Select foreground color",
             fg="blue",
             bg="white",
@@ -189,7 +190,7 @@ class worms:
         ToolTip(selectForegroundColorButton, text="Select foreground color")
         # #######################################
         checkButtonFrame = tkinter.Frame(
-            tkRoot,
+            worms.tkRoot,
             bg="white",
             width=20,
             highlightbackground="black",
@@ -240,7 +241,7 @@ class worms:
         worms.backgroundColorRandomCheckButtonVar.set(False)
         # #######################################
         speedSelect = tkinter.Scale(
-            tkRoot,
+            worms.tkRoot,
             fg="blue",
             bg="white",
             label="Speed",
@@ -256,7 +257,7 @@ class worms:
         worms.speedVar.set(10)
         # #######################################
         blockSize = tkinter.Scale(
-            tkRoot,
+            worms.tkRoot,
             fg="blue",
             bg="white",
             label="Block size",
@@ -272,7 +273,7 @@ class worms:
         worms.blockSizeVar.set(10)
         # #######################################
         quitButton = tkinter.Button(
-            tkRoot,
+            worms.tkRoot,
             text="Quit",
             fg="blue",
             bg="white",
@@ -337,7 +338,7 @@ class worms:
             print("Number of colors: ", len(worms.colorList))
 
     # #######################################
-    def drawWorms():
+    def drawWorms():  # noqa: C901
         worms.screenWidth, worms.screenHeight = screen.get_size()
         print(worms.screenWidth, worms.screenHeight, '*' * 30)
 
