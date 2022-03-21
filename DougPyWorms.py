@@ -85,6 +85,7 @@ for event in pygame.event.get():
 
 class worms:
     tkRoot = tkinter.Tk()
+    infoLabelVar = tkinter.StringVar()
     clearBeforeDrawCheckButtonVar = tkinter.BooleanVar()
     foregroundColorRandomCheckButtonVar = tkinter.BooleanVar()
     backgroundColorRandomCheckButtonVar = tkinter.BooleanVar()
@@ -129,8 +130,18 @@ class worms:
             file="".join([os.path.dirname(__file__), os.sep, "KickUnderBus.png"])
         )
         worms.tkRoot.iconphoto(True, photo)
-
+        # worms.clearDisplay()
         worms.setUp()
+        # #######################################
+        infoLabel = tkinter.Label(
+            worms.tkRoot,
+            textvariable=worms.infoLabelVar,
+            text="Clear",
+            fg="blue",
+            bg="white",
+            width=20)
+        infoLabel.pack(side=tkinter.TOP, anchor=tkinter.W, fill=tkinter.X)
+        worms.infoLabelVar.set('Draw some worms')
         # #######################################
         drawWormsButton = tkinter.Button(
             worms.tkRoot,
@@ -283,8 +294,7 @@ class worms:
         quitButton.pack(side=tkinter.TOP, anchor=tkinter.W, fill=tkinter.X)
         ToolTip(quitButton, text="Quit the program")
         # #######################################
-
-        tkinter.mainloop()
+        worms.tkRoot.mainloop()
 
     def quitProgram():
         if debugMode:
@@ -298,8 +308,6 @@ class worms:
     def setUp():
         global debugMode
         global screen
-
-        global menuHeight
         global tkRoot
 
         debugFile = "DougPyWorms.txt"
@@ -311,7 +319,8 @@ class worms:
             screenPosVertical
         )
 
-        screen = pygame.display.set_mode((worms.screenWidth, worms.screenHeight), pygame.RESIZABLE)
+        screen = pygame.display.set_mode((worms.screenWidth, worms.screenHeight),
+                                         pygame.RESIZABLE)
         pygame.display.set_caption("Draw some worms", "worms")
         pygame.event.pump()
 
@@ -326,10 +335,16 @@ class worms:
         pp.pprint(str(event))
 
         img = pygame.image.load(
-            "".join([os.path.dirname(__file__), os.sep, "KickUnderBus.png"])
+            "".join([os.path.dirname(__file__),
+                     os.sep, "KickUnderBus.png"])
         )
 
         pygame.display.set_icon(img)
+
+        # tkinter.update()
+        screen.fill(worms.backgroundColor)
+        pygame.display.flip()
+        # tkinter.update_idletasks()
 
         # Generate list of colors
         colorKeys = pygame.color.THECOLORS.keys()
@@ -371,12 +386,30 @@ class worms:
         horizontalPosition = random.randrange(10, worms.screenWidth - 10)
         verticalPosition = random.randrange(10, worms.screenHeight - 10)
         direction = random.choice(['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'])
-        print(horizontalPosition, verticalPosition, direction)
+
+        # the following are for debugging
+        # Also playerOld is tweaked for debugging
+        """
+        horizontalPosition = 100
+        verticalPosition = 50
+        direction = 'S'
+        """
+        info = ' '.join([str(horizontalPosition),
+                         str(verticalPosition),
+                         str(direction)])
+        worms.infoLabelVar.set(info)
+        # tkinter.update()
+        screen.fill(worms.backgroundColor)
+        pygame.display.flip()
+        # tkinter.update_idletasks()
+        print(info)
         run = True
 
         # (left, top), (width, height)
-        playerNew = Rect((horizontalPosition, verticalPosition), (worms.blockSizeVar.get(), worms.blockSizeVar.get()))
-        playerOld = Rect((horizontalPosition + 100, verticalPosition + 100), (worms.blockSizeVar.get(), worms.blockSizeVar.get()))
+        playerNew = Rect((horizontalPosition, verticalPosition),
+                         (worms.blockSizeVar.get(), worms.blockSizeVar.get()))
+        playerOld = Rect((horizontalPosition, verticalPosition + 200),
+                         (worms.blockSizeVar.get(), worms.blockSizeVar.get()))
 
         if worms.clearBeforeDrawCheckButtonVar.get():
             worms.clearDisplay()
@@ -407,9 +440,19 @@ class worms:
             time.sleep(worms.speedVar.get() / 500)
 
             run = testForCollision()
-            print(playerNew.left, playerNew.right, playerNew.top, playerNew.bottom)
-            pygame.draw.rect(screen, worms.foregroundColor, playerNew)
+            if not run:
+                print('  '.join(['run == False',
+                                 'screenWidth:', str(worms.screenWidth),
+                                 'screenHeight:', str(worms.screenHeight),
+                                 'direction:', direction,
+                                 'blockSize:', str(worms.blockSizeVar.get()),
+                                 os.linesep,
+                                 'playerNew.bottom:', str(playerNew.bottom),
+                                 'playerNew.top:', str(playerNew.top),
+                                 'playerNew.left:', str(playerNew.left),
+                                 'playerNew.right:', str(playerNew.right)]))
 
+            pygame.draw.rect(screen, worms.foregroundColor, playerNew)
             pygame.display.flip()
 
     def clearDisplay():
