@@ -437,13 +437,14 @@ class worms:
         while not collided:
             # print('clock.tick: ', str(clock.tick(60)))
             if direction == 'N' or direction == 'NE' or direction == 'NW':
-                worms.playerNew.top -= worms.blockSizeVar.get()  # Going up
-            if direction == 'E' or direction == 'NE' or direction == 'SE':
-                worms.playerNew.left += worms.blockSizeVar.get()  # Going left
+                worms.playerNew.top -= worms.blockSizeVar.get()  # Going up (North)
             if direction == 'S' or direction == 'SE' or direction == 'SW':
-                worms.playerNew.bottom += worms.blockSizeVar.get()  # Going down
+                worms.playerNew.bottom += worms.blockSizeVar.get()  # Going down (South)
+
+            if direction == 'E' or direction == 'NE' or direction == 'SE':
+                worms.playerNew.right += worms.blockSizeVar.get()  # Going right (East)
             if direction == 'W' or direction == 'NW' or direction == 'SW':
-                worms.playerNew.right += worms.blockSizeVar.get()  # Going right
+                worms.playerNew.left -= worms.blockSizeVar.get()  # Going left (West)
 
             pygame.draw.rect(screen, worms.foregroundColor, worms.playerNew)
             pygame.display.flip()
@@ -455,8 +456,8 @@ class worms:
 
             if collided:
                 if debugMode:
-                    print('  '.join(['line: 458'
-                                     'collided:', collided,
+                    print('  '.join(['line: 458',
+                                     'collided:', str(collided),
                                      'message:', message,
                                      'screenWidth:', str(worms.screenWidth),
                                      'screenHeight:', str(worms.screenHeight),
