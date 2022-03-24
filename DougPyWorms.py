@@ -29,6 +29,7 @@ from tkinter.colorchooser import askcolor
 import pygame
 from pygame.locals import Rect
 from screeninfo import get_monitors
+import inspect
 
 from ToolTip import ToolTip
 import pprint
@@ -77,6 +78,15 @@ else:
         print(" __name__", __name__)
 
 clock = pygame.time.Clock()
+game_font = pygame.font.SysFont('Verdana', 20)
+
+font_color = (125, 128, 255)
+north = game_font.render("North", True, font_color)
+south = game_font.render("South", True, font_color)
+east = game_font.render("east", True, font_color)
+west = game_font.render("west", True, font_color)
+
+
 # https://www.pygame.org/docs/ref/event.html
 for event in pygame.event.get():
     if event.type == pygame.WINDOWRESIZED:
@@ -92,7 +102,7 @@ class worms:
     blockSizeVar = tkinter.IntVar()
     speedVar = tkinter.IntVar()
     menuWidth = 220
-    menuHeight = 600
+    menuHeight = 500
     screenWidth = 800
     screenHeight = 500
     colorList = []
@@ -119,7 +129,7 @@ class worms:
                 "+",
                 str(screenPosHorizontal - worms.menuWidth - 10),
                 "+",
-                str(screenPosVertical - 80),
+                str(screenPosVertical - 50),
             ]
         )
 
@@ -130,7 +140,7 @@ class worms:
         main_dialog.pack(side=tkinter.TOP, fill=tkinter.X)
         print("dirname:    ", os.path.dirname(__file__))
         photo = tkinter.PhotoImage(
-            file="".join([os.path.dirname(__file__), os.sep, "KickUnderBus.png"])
+            file="".join([os.path.dirname(__file__), os.sep, "worm2.png"])
         )
         worms.tkRoot.iconphoto(True, photo)
         # worms.clearDisplay()
@@ -307,7 +317,6 @@ class worms:
         sys.exit(0)
 
     # #######################################
-
     def setUp():
         global debugMode
         global screen
@@ -324,7 +333,7 @@ class worms:
 
         screen = pygame.display.set_mode((worms.screenWidth, worms.screenHeight),
                                          pygame.RESIZABLE)
-        pygame.display.set_caption("Draw some worms", "worms")
+
         pygame.event.pump()
 
         monitorInfo = get_monitors()
@@ -338,15 +347,14 @@ class worms:
 
         img = pygame.image.load(
             "".join([os.path.dirname(__file__),
-                     os.sep, "KickUnderBus.png"])
+                     os.sep, "worm1.png"])
         )
-
         pygame.display.set_icon(img)
+        pygame.display.set_caption("Draw some worms", "worms")
 
         # tkinter.update()
         screen.fill(worms.backgroundColor)
         pygame.display.flip()
-        # tkinter.update_idletasks()
 
         # Generate list of colors
         colorKeys = pygame.color.THECOLORS.keys()
@@ -387,10 +395,25 @@ class worms:
             # if debugMode:
             # print('389', worms.rectangle_list, worms.playerNew)
             return (False, 'No collision')
+
+        # ----------------------
+        def calculateMove():
+            # print('clock.tick: ', str(clock.tick(60)))
+            if direction == 'N' or direction == 'NE' or direction == 'NW':
+                worms.playerNew.top -= worms.blockSizeVar.get()  # Going up (North)
+            if direction == 'S' or direction == 'SE' or direction == 'SW':
+                worms.playerNew.bottom += worms.blockSizeVar.get()  # Going down (South)
+
+            if direction == 'E' or direction == 'NE' or direction == 'SE':
+                worms.playerNew.right += worms.blockSizeVar.get()  # Going right (East)
+            if direction == 'W' or direction == 'NW' or direction == 'SW':
+                worms.playerNew.left -= worms.blockSizeVar.get()  # Going left (West)
+
         # ----------------------
         # Get the starting position and direction
         horizontalPosition = random.randrange(10, worms.screenWidth - 10)
         verticalPosition = random.randrange(10, worms.screenHeight - 10)
+
         direction = random.choice(['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'])
 
         # the following are for debugging
@@ -407,7 +430,12 @@ class worms:
         worms.infoLabelVar.set(info)
 
         screen.fill(worms.backgroundColor)
+        screen.blit(north, (worms.screenWidth / 2, 40))
+        screen.blit(south, (worms.screenWidth / 2, worms.screenHeight - 100))
+        screen.blit(east, (worms.screenWidth - 140, worms.screenHeight / 2))
+        screen.blit(west, (0, worms.screenHeight / 2))
         pygame.display.flip()
+
         if debugMode:
             print('info: ', info)
         collided = False
@@ -435,17 +463,8 @@ class worms:
 
         # loop until collision
         while not collided:
+            calculateMove()
             # print('clock.tick: ', str(clock.tick(60)))
-            if direction == 'N' or direction == 'NE' or direction == 'NW':
-                worms.playerNew.top -= worms.blockSizeVar.get()  # Going up (North)
-            if direction == 'S' or direction == 'SE' or direction == 'SW':
-                worms.playerNew.bottom += worms.blockSizeVar.get()  # Going down (South)
-
-            if direction == 'E' or direction == 'NE' or direction == 'SE':
-                worms.playerNew.right += worms.blockSizeVar.get()  # Going right (East)
-            if direction == 'W' or direction == 'NW' or direction == 'SW':
-                worms.playerNew.left -= worms.blockSizeVar.get()  # Going left (West)
-
             pygame.draw.rect(screen, worms.foregroundColor, worms.playerNew)
             pygame.display.flip()
 
@@ -456,7 +475,7 @@ class worms:
 
             if collided:
                 if debugMode:
-                    print('  '.join(['line: 458',
+                    print('  '.join(['line: ', str(inspect.getframeinfo(inspect.currentframe()).lineno),
                                      'collided:', str(collided),
                                      'message:', message,
                                      'screenWidth:', str(worms.screenWidth),
