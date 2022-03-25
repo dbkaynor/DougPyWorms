@@ -92,6 +92,7 @@ class worms:
     clearBeforeDrawCheckButtonVar = tkinter.BooleanVar()
     foregroundColorRandomCheckButtonVar = tkinter.BooleanVar()
     backgroundColorRandomCheckButtonVar = tkinter.BooleanVar()
+    showTextCheckButtonVar = tkinter.BooleanVar()
     blockSizeVar = tkinter.IntVar()
     speedVar = tkinter.IntVar()
     menuWidth = 220
@@ -214,7 +215,7 @@ class worms:
             relief=tkinter.RAISED
         )
         checkButtonFrame.pack(side=tkinter.TOP, anchor=tkinter.W, fill=tkinter.X)
-
+        # #######################################
         clearBeforeDrawCheckButton = tkinter.Checkbutton(
             checkButtonFrame,
             text="Clear before draw",
@@ -256,6 +257,21 @@ class worms:
         backgroundColorRandomCheckButton.pack(side=tkinter.TOP, anchor=tkinter.W)
         ToolTip(backgroundColorRandomCheckButton, text="Random background color")
         worms.backgroundColorRandomCheckButtonVar.set(False)
+        # #######################################
+        showTextCheckButton = tkinter.Checkbutton(
+            checkButtonFrame,
+            text="Show text",
+            fg="blue",
+            bg="white",
+            onvalue=True,
+            offvalue=False,
+            command=lambda: print("Show text"),
+            variable=worms.showTextCheckButtonVar
+        )
+        showTextCheckButton.pack(
+            side=tkinter.TOP, anchor=tkinter.W)
+        ToolTip(showTextCheckButton, text="Show text")
+        worms.showTextCheckButtonVar.set(True)
         # #######################################
         speedSelect = tkinter.Scale(
             worms.tkRoot,
@@ -369,7 +385,7 @@ class worms:
 
         screen.blit(northText, (screenWidth / 2, 10))
         screen.blit(southText, (screenWidth / 2, screenHeight - 30))
-        screen.blit(eastText, (screenWidth - 60,screenHeight / 2))
+        screen.blit(eastText, (screenWidth - 60, screenHeight / 2))
         screen.blit(westText, (10, screenHeight / 2))
         screen.blit(infoText, (screenWidth / 2, screenHeight / 2))
         pygame.display.flip()
@@ -462,8 +478,13 @@ class worms:
             worms.foregroundColor = worms.colorList[color]
 
         # screen.fill(worms.backgroundColor)
-        worms.drawScreenText(infoString, worms.screenWidth, worms.screenHeight)
-        pygame.draw.rect(screen, worms.foregroundColor, worms.playerNew)
+        if worms.showTextCheckButtonVar.get():
+            worms.drawScreenText(infoString,
+                                 worms.screenWidth,
+                                 worms.screenHeight)
+        pygame.draw.rect(screen,
+                         worms.foregroundColor,
+                         worms.playerNew)
         pygame.draw.rect(screen, 'green', worms.playerOld)
         worms.rectangle_list.append(str(worms.playerOld))
         pygame.display.flip()
