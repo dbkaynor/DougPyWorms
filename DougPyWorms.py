@@ -78,13 +78,6 @@ else:
         print(" __name__", __name__)
 
 clock = pygame.time.Clock()
-game_font = pygame.font.SysFont('Verdana', 20)
-
-font_color = (125, 128, 255)
-north = game_font.render("North", True, font_color)
-south = game_font.render("South", True, font_color)
-east = game_font.render("east", True, font_color)
-west = game_font.render("west", True, font_color)
 
 
 # https://www.pygame.org/docs/ref/event.html
@@ -363,6 +356,25 @@ class worms:
             print("Number of colors: ", len(worms.colorList))
 
     # #######################################
+    def drawScreenText(infoString, screenWidth, screenHeight):
+        directionFont = pygame.font.SysFont('Verdana', 20)
+        infoFont = pygame.font.SysFont('Verdana', 20)
+
+        fontColor = 'pink'
+        northText = directionFont.render("North", True, fontColor)
+        southText = directionFont.render("South", True, fontColor)
+        eastText = directionFont.render("east", True, fontColor)
+        westText = directionFont.render("west", True, fontColor)
+        infoText = infoFont.render(infoString, True, fontColor)
+
+        screen.blit(northText, (screenWidth / 2, 10))
+        screen.blit(southText, (screenWidth / 2, screenHeight - 30))
+        screen.blit(eastText, (screenWidth - 60,screenHeight / 2))
+        screen.blit(westText, (10, screenHeight / 2))
+        screen.blit(infoText, (screenWidth / 2, screenHeight / 2))
+        pygame.display.flip()
+
+    # #######################################
     def drawWorms():  # noqa: C901
         worms.screenWidth, worms.screenHeight = screen.get_size()
         if debugMode:
@@ -385,7 +397,7 @@ class worms:
                 return (True, 'west')
             if worms.playerNew.bottom >= worms.screenHeight:
                 print('worms.playerNew.bottom >= worms.screenHeight', worms.playerNew.bottom, worms.screenHeight)
-                return (False, 'south')
+                return (True, 'south')
             if worms.playerNew.top <= 0:
                 print('worms.playerNew.top <= 0', worms.playerNew.top, 0)
                 return (True, 'north')
@@ -424,20 +436,13 @@ class worms:
         # direction = 'W'
 
         # this puts info into the status label
-        info = ' '.join([str(horizontalPosition),
-                         str(verticalPosition),
-                         str(direction)])
-        worms.infoLabelVar.set(info)
-
-        screen.fill(worms.backgroundColor)
-        screen.blit(north, (worms.screenWidth / 2, 40))
-        screen.blit(south, (worms.screenWidth / 2, worms.screenHeight - 100))
-        screen.blit(east, (worms.screenWidth - 140, worms.screenHeight / 2))
-        screen.blit(west, (0, worms.screenHeight / 2))
-        pygame.display.flip()
-
+        infoString = ' '.join([str(horizontalPosition),
+                               str(verticalPosition),
+                               str(direction)])
+        worms.infoLabelVar.set(infoString)
         if debugMode:
-            print('info: ', info)
+            print('info: ', infoString)
+
         collided = False
 
         # (left, top), (width, height)
@@ -456,6 +461,8 @@ class worms:
             color = random.randrange(0, len(worms.colorList))
             worms.foregroundColor = worms.colorList[color]
 
+        # screen.fill(worms.backgroundColor)
+        worms.drawScreenText(infoString, worms.screenWidth, worms.screenHeight)
         pygame.draw.rect(screen, worms.foregroundColor, worms.playerNew)
         pygame.draw.rect(screen, 'green', worms.playerOld)
         worms.rectangle_list.append(str(worms.playerOld))
