@@ -98,7 +98,7 @@ class worms:
     menuWidth = 220
     menuHeight = 500
     screenWidth = 800
-    screenHeight = 500
+    screenHeight = 550
     colorList = []
     foregroundColor = 'white'
     backgroundColor = "black"
@@ -123,7 +123,7 @@ class worms:
                 "+",
                 str(screenPosHorizontal - worms.menuWidth - 10),
                 "+",
-                str(screenPosVertical - 50),
+                str(screenPosVertical),
             ]
         )
 
@@ -133,22 +133,22 @@ class worms:
         main_dialog = tkinter.Frame(worms.tkRoot)
         main_dialog.pack(side=tkinter.TOP, fill=tkinter.X)
         print("dirname:    ", os.path.dirname(__file__))
-        photo = tkinter.PhotoImage(
-            file="".join([os.path.dirname(__file__), os.sep, "worm2.png"])
+        image = tkinter.PhotoImage(
+            file="".join([os.path.dirname(__file__), os.sep, "Worm1.png"])
         )
-        worms.tkRoot.iconphoto(True, photo)
-        # worms.clearDisplay()
+        worms.tkRoot.iconphoto(True, image)
         worms.setUp()
         # #######################################
         infoLabel = tkinter.Label(
             worms.tkRoot,
             textvariable=worms.infoLabelVar,
             text="Clear",
-            fg="blue",
+            fg="green",
             bg="white",
             width=20)
         infoLabel.pack(side=tkinter.TOP, anchor=tkinter.W, fill=tkinter.X)
         worms.infoLabelVar.set('Draw some worms')
+        ToolTip(infoLabel, text="Display information about program")
         # #######################################
         drawWormsButton = tkinter.Button(
             worms.tkRoot,
@@ -316,6 +316,7 @@ class worms:
         quitButton.pack(side=tkinter.TOP, anchor=tkinter.W, fill=tkinter.X)
         ToolTip(quitButton, text="Quit the program")
         # #######################################
+        worms.tkRoot.after(500, worms.clearDisplay)
         worms.tkRoot.mainloop()
 
     def quitProgram():
@@ -339,12 +340,21 @@ class worms:
             screenPosHorizontal,
             screenPosVertical
         )
-
+        pygame.init()
         screen = pygame.display.set_mode((worms.screenWidth, worms.screenHeight),
-                                         pygame.RESIZABLE)
+                                         pygame.NOFRAME)
+        """
+        The flags argument is a collection of additional options. The depth argument represents the number of bits to use for color.
+        pygame.FULLSCREEN    create a fullscreen display
+        pygame.DOUBLEBUF     recommended for HWSURFACE or OPENGL
+        pygame.HWSURFACE     hardware accelerated, only in FULLSCREEN
+        pygame.OPENGL        create an opengl renderable display
+        pygame.RESIZABLE     display window should be sizeable
+        pygame.NOFRAME       display window will have no border or controls
+        """
+        # screen = pygame.display.set_mode((worms.screenWidth, worms.screenHeight), pygame.RESIZABLE)
 
         pygame.event.pump()
-
         monitorInfo = get_monitors()
         if debugMode:
             print("setUp")
@@ -354,14 +364,7 @@ class worms:
             pp.pprint(pygame.display.Info())
             pp.pprint(str(event))
 
-        img = pygame.image.load(
-            "".join([os.path.dirname(__file__),
-                     os.sep, "worm1.png"])
-        )
-        pygame.display.set_icon(img)
         pygame.display.set_caption("Draw some worms", "worms")
-
-        # tkinter.update()
         screen.fill(worms.backgroundColor)
         pygame.display.flip()
 
@@ -382,13 +385,17 @@ class worms:
         eastText = directionFont.render("east", True, fontColor)
         westText = directionFont.render("west", True, fontColor)
         infoText = infoFont.render(infoString, True, fontColor)
+        fgText = infoFont.render(worms.foregroundColor, True, fontColor)
+        bgText = infoFont.render(worms.backgroundColor, True, fontColor)
 
         screen.blit(northText, (screenWidth / 2, 10))
         screen.blit(southText, (screenWidth / 2, screenHeight - 30))
         screen.blit(eastText, (screenWidth - 60, screenHeight / 2))
         screen.blit(westText, (10, screenHeight / 2))
-        screen.blit(infoText, (screenWidth / 2, screenHeight / 2))
-        pygame.display.flip()
+        screen.blit(infoText, (screenWidth / 2 - 35, screenHeight / 2 - 10))
+        screen.blit(bgText, (screenWidth / 2 - 35, screenHeight / 2 - 35))
+        screen.blit(fgText, (screenWidth / 2 - 35, screenHeight / 2 - 60))
+        pygame.display.flip
 
     # #######################################
     def drawWorms():  # noqa: C901
@@ -451,14 +458,6 @@ class worms:
         # verticalPosition = 50
         # direction = 'W'
 
-        # this puts info into the status label
-        infoString = ' '.join([str(horizontalPosition),
-                               str(verticalPosition),
-                               str(direction)])
-        worms.infoLabelVar.set(infoString)
-        if debugMode:
-            print('info: ', infoString)
-
         collided = False
 
         # (left, top), (width, height)
@@ -478,15 +477,27 @@ class worms:
             worms.foregroundColor = worms.colorList[color]
 
         # screen.fill(worms.backgroundColor)
-        if worms.showTextCheckButtonVar.get():
-            worms.drawScreenText(infoString,
-                                 worms.screenWidth,
-                                 worms.screenHeight)
+
         pygame.draw.rect(screen,
                          worms.foregroundColor,
                          worms.playerNew)
         pygame.draw.rect(screen, 'green', worms.playerOld)
         worms.rectangle_list.append(str(worms.playerOld))
+        # this puts info into the status label
+        infoString = ' '.join([str(horizontalPosition),
+                               str(verticalPosition),
+                               str(direction)])
+        worms.infoLabelVar.set('  '.join([infoString,
+                                          worms.foregroundColor,
+                                          worms.backgroundColor]))
+
+        if worms.showTextCheckButtonVar.get():
+            worms.drawScreenText(infoString,
+                                 worms.screenWidth,
+                                 worms.screenHeight)
+
+        if debugMode:
+            print('info: ', infoString)
         pygame.display.flip()
 
         # loop until collision
