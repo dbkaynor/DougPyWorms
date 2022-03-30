@@ -134,7 +134,7 @@ class worms:
         main_dialog.pack(side=tkinter.TOP, fill=tkinter.X)
         print("dirname:    ", os.path.dirname(__file__))
         image = tkinter.PhotoImage(
-            file="".join([os.path.dirname(__file__), os.sep, "Worm1.png"])
+            file="".join([os.path.dirname(__file__), os.sep, "worm.png"])
         )
         worms.tkRoot.iconphoto(True, image)
         worms.setUp()
@@ -342,7 +342,7 @@ class worms:
         )
         pygame.init()
         screen = pygame.display.set_mode((worms.screenWidth, worms.screenHeight),
-                                         pygame.NOFRAME)
+                                         pygame.RESIZABLE)
         """
         The flags argument is a collection of additional options. The depth argument represents the number of bits to use for color.
         pygame.FULLSCREEN    create a fullscreen display
@@ -364,7 +364,13 @@ class worms:
             pp.pprint(pygame.display.Info())
             pp.pprint(str(event))
 
-        pygame.display.set_caption("Draw some worms", "worms")
+        img = pygame.image.load(
+            "".join([os.path.dirname(__file__),
+                     os.sep, "worm.png"])
+        )
+        pygame.display.set_icon(img)
+
+        pygame.display.set_caption("Draw some worms", "Worms")
         screen.fill(worms.backgroundColor)
         pygame.display.flip()
 
