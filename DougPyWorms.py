@@ -103,7 +103,7 @@ class worms:
     foregroundColor = 'white'
     backgroundColor = "black"
     rectangle_list = []
-    playerNew = []
+    player = []
 
     def main():
         global screenPosVertical
@@ -387,8 +387,8 @@ class worms:
         fontColor = 'pink'
         northText = directionFont.render("North", True, fontColor)
         southText = directionFont.render("South", True, fontColor)
-        eastText = directionFont.render("east", True, fontColor)
-        westText = directionFont.render("west", True, fontColor)
+        eastText = directionFont.render("East", True, fontColor)
+        westText = directionFont.render("West", True, fontColor)
         infoText = infoFont.render(infoString, True, fontColor)
         fgText = infoFont.render(worms.foregroundColor, True, fontColor)
         bgText = infoFont.render(worms.backgroundColor, True, fontColor)
@@ -405,43 +405,41 @@ class worms:
     # #######################################
     def drawWorms():  # noqa: C901
         # ----------------------
-        # if a collision happens return true
+        # if a collision happens, return true
         def testForCollision():
-            collide = worms.rectangle_list.count(str(worms.playerNew))
-            # collide = pygame.Rect.collidelist(worms.playerNew, worms.rectangle_list)
+            collide = worms.rectangle_list.count(str(worms.player))
             if collide != 0:
-                print('collide: ', collide)
-                print(worms.playerNew, worms.rectangle_list)
+                print('collide: ', collide, 'player: ', worms.player, 'List: ', worms.rectangle_list)
                 return (True, 'collide')
-            if worms.playerNew.right >= worms.screenWidth:
-                print('worms.playerNew.right <= worms.screenWidth', worms.playerNew.right, worms.screenWidth)
+            if worms.player.right >= worms.screenWidth:
+                print('worms.player.right <= worms.screenWidth', worms.player.right, worms.screenWidth)
                 return (True, 'east')
-            if worms.playerNew.left <= 0:
-                print('worms.playerNew.left <= 0', worms.playerNew.left, 0)
+            if worms.player.left <= 0:
+                print('worms.player.left <= 0', worms.player.left, 0)
                 return (True, 'west')
-            if worms.playerNew.bottom >= worms.screenHeight:
-                print('worms.playerNew.bottom >= worms.screenHeight', worms.playerNew.bottom, worms.screenHeight)
+            if worms.player.bottom >= worms.screenHeight:
+                print('worms.player.bottom >= worms.screenHeight', worms.player.bottom, worms.screenHeight)
                 return (True, 'south')
-            if worms.playerNew.top <= 0:
-                print('worms.playerNew.top <= 0', worms.playerNew.top, 0)
+            if worms.player.top <= 0:
+                print('worms.player.top <= 0', worms.player.top, 0)
                 return (True, 'north')
 
             # If a collision did not occur continue
-            worms.rectangle_list.append(str(worms.playerNew))
+            worms.rectangle_list.append(str(worms.player))
             return (False, 'No collision')
 
         # ----------------------
         def calculateMove():
             # print('clock.tick: ', str(clock.tick(60)))
             if direction == 'N' or direction == 'NE' or direction == 'NW':
-                worms.playerNew.top -= worms.blockSizeVar.get()  # Going up (North)
+                worms.player.bottom -= worms.blockSizeVar.get()  # Going up (North)
             if direction == 'S' or direction == 'SE' or direction == 'SW':
-                worms.playerNew.bottom += worms.blockSizeVar.get()  # Going down (South)
+                worms.player.top += worms.blockSizeVar.get()  # Going down (South)
 
             if direction == 'E' or direction == 'NE' or direction == 'SE':
-                worms.playerNew.right += worms.blockSizeVar.get()  # Going right (East)
+                worms.player.left += worms.blockSizeVar.get()  # Going right (East)
             if direction == 'W' or direction == 'NW' or direction == 'SW':
-                worms.playerNew.left -= worms.blockSizeVar.get()  # Going left (West)
+                worms.player.right -= worms.blockSizeVar.get()  # Going left (West)
 
         # ----------------------
         # Start drawWorms here
@@ -450,22 +448,6 @@ class worms:
             print(worms.screenWidth, worms.screenHeight, '*' * 30)
         worms.rectangle_list = []
         collided = False
-
-        # Get the starting position and direction
-        OFFSET = 15
-        horizontalPosition = random.randrange(OFFSET, worms.screenWidth - OFFSET)
-        verticalPosition = random.randrange(OFFSET, worms.screenHeight - OFFSET)
-        direction = random.choice(['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'])
-        # the following are for debugging
-
-        # horizontalPosition = 10
-        # verticalPosition = 50
-        # direction = 'W'
-
-        # Calculate where the player should go
-        # (left, top), (width, height)
-        worms.playerNew = Rect((horizontalPosition, verticalPosition),
-                               (worms.blockSizeVar.get(), worms.blockSizeVar.get()))
 
         if worms.clearBeforeDrawCheckButtonVar.get():
             worms.clearDisplay()
@@ -477,28 +459,37 @@ class worms:
             color = random.randrange(0, len(worms.colorList))
             worms.foregroundColor = worms.colorList[color]
 
-        # screen.fill(worms.backgroundColor)
+        # Get the starting position and direction
+        OFFSET = 15  # This is how far from the screen edges to allow
+        horizontalPosition = random.randrange(OFFSET, worms.screenWidth - OFFSET)
+        verticalPosition = random.randrange(OFFSET, worms.screenHeight - OFFSET)
+        direction = random.choice(['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'])
 
+        # the following are for debugging
+        # They must be a multiple of worms.blockSizeVar
+        horizontalPosition = worms.blockSizeVar.get() * 15
+        verticalPosition = worms.blockSizeVar.get() * 10
+        direction = 'W'
+
+        # Calculate where the player should go
+        # (left, top), (width, height)
+        worms.player = Rect((horizontalPosition, verticalPosition),
+                            (worms.blockSizeVar.get(), worms.blockSizeVar.get()))
         pygame.draw.rect(screen,
                          worms.foregroundColor,
-                         worms.playerNew)
+                         worms.player)
 
         # This draws a wall to collide with for testing
-        playerWall1 = Rect((horizontalPosition - 80, verticalPosition - 60),
-                           (worms.blockSizeVar.get(), worms.blockSizeVar.get()))
-        for x in range(random.randrange(5, 40)):
-            playerWall1.bottom += worms.blockSizeVar.get()  # Going vertical
-            pygame.draw.rect(screen, 'green', playerWall1)
-            worms.rectangle_list.append(str(playerWall1))
+        z = worms.blockSizeVar.get()
+        wall1 = Rect((horizontalPosition - (z * 4),
+                      verticalPosition - (z * 3)),
+                     (z, z))
+        for x in range(5):
+            wall1.bottom += worms.blockSizeVar.get()  # Going vertical
+            pygame.draw.rect(screen, 'green', wall1)
+            worms.rectangle_list.append(str(wall1))
 
-        playerWall2 = Rect((horizontalPosition + 100, verticalPosition + 90),
-                           (worms.blockSizeVar.get(), worms.blockSizeVar.get()))
-        for x in range(random.randrange(5, 40)):
-            playerWall2.left -= worms.blockSizeVar.get()  # Going horizontal)
-            pygame.draw.rect(screen, 'yellow', playerWall2)
-            worms.rectangle_list.append(str(playerWall2))
         pygame.display.flip()
-
         # this puts info into the status label
         infoString = ' '.join([str(horizontalPosition),
                                str(verticalPosition),
@@ -516,41 +507,48 @@ class worms:
             print('info: ', infoString)
         pygame.display.flip()
 
+        def debugStuffPrint():
+            print('  '.join(['line: ', str(inspect.getframeinfo(inspect.currentframe()).lineno),
+                             'collided: ', str(collided),
+                             'message: ', message,
+                             'screenWidth: ', str(worms.screenWidth),
+                             'screenHeight: ', str(worms.screenHeight),
+                             'direction: ', direction,
+                             'blockSize: ', str(worms.blockSizeVar.get()),
+                             'speed: ', str(worms.speedVar.get()),
+                             os.linesep,
+                             'worms.player.bottom: ', str(worms.player.bottom),
+                             'worms.player.top: ', str(worms.player.top),
+                             'worms.player.left: ', str(worms.player.left),
+                             'worms.player.right: ', str(worms.player.right),
+                             os.linesep,
+                             'rectangle count: ', str(len(worms.rectangle_list)),
+                             'sizeof.rectangle_list: ', str(sys.getsizeof(worms.rectangle_list))]))
         # loop until collision
         while not collided:
             calculateMove()
-
-            pygame.draw.rect(screen, worms.foregroundColor, worms.playerNew)
+            pygame.draw.rect(screen, worms.foregroundColor, worms.player)
             pygame.display.flip()
-
             time.sleep(worms.speedVar.get() / 500)
 
-            # returns true if we collided
-            (collided, message) = testForCollision()
-            if collided:
+            (collided, message) = testForCollision()  # returns true if we collided
+            if collided:  # A collision occurred
                 if debugMode:
-                    print('  '.join(['line: ', str(inspect.getframeinfo(inspect.currentframe()).lineno),
-                                     'collided:', str(collided),
-                                     'message:', message,
-                                     'screenWidth:', str(worms.screenWidth),
-                                     'screenHeight:', str(worms.screenHeight),
-                                     'direction:', direction,
-                                     'blockSize:', str(worms.blockSizeVar.get()),
-                                     'speed:', str(worms.speedVar.get()),
-                                     os.linesep,
-                                     'worms.playerNew.bottom:', str(worms.playerNew.bottom),
-                                     'worms.playerNew.top:', str(worms.playerNew.top),
-                                     'worms.playerNew.left:', str(worms.playerNew.left),
-                                     'worms.playerNew.right:', str(worms.playerNew.right),
-                                     os.linesep,
-                                     'rectangle count: ', str(len(worms.rectangle_list)),
-                                     'sizeof.rectangle_list: ', str(sys.getsizeof(worms.rectangle_list))]))
+                    debugStuffPrint()
 
-                direction = random.choice(['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'])
-                calculateMove()
-                testForCollision()
-            # pygame.draw.rect(screen, worms.foregroundColor, worms.playerNew)
-            # pygame.display.flip()
+                pygame.draw.rect(screen, 'blue', worms.player)  # This is the colliosion point
+                pygame.display.flip()
+                maxTries = 10
+                tries = 0
+                collided = False
+                while not collided:
+                    tries += 1
+                    if tries > maxTries:
+                        print('Unable to move (random tries).')
+                        break
+                    direction = random.choice(['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'])
+                    calculateMove()
+                    (collided, message) = testForCollision()
 
     def clearDisplay():
         global debugMode
