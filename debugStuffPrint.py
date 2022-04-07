@@ -1,0 +1,17 @@
+        def debugStuffPrint():
+            print('  '.join(['line: ', str(inspect.getframeinfo(inspect.currentframe()).lineno),
+                             'collided: ', str(collided),
+                             'message: ', message,
+                             'screenWidth: ', str(worms.screenWidth),
+                             'screenHeight: ', str(worms.screenHeight),
+                             'direction: ', direction,
+                             'blockSize: ', str(worms.blockSizeVar.get()),
+                             'speed: ', str(worms.speedVar.get()),
+                             os.linesep,
+                             'worms.player.bottom: ', str(worms.player.bottom),
+                             'worms.player.top: ', str(worms.player.top),
+                             'worms.player.left: ', str(worms.player.left),
+                             'worms.player.right: ', str(worms.player.right),
+                             os.linesep,
+                             'rectangle count: ', str(len(worms.rectangle_list)),
+                             'sizeof.rectangle_list: ', str(sys.getsizeof(worms.rectangle_list))]))
