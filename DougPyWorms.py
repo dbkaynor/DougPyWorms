@@ -509,6 +509,8 @@ class worms:
         pygame.display.flip()
 
         # loop until collision
+        maxCollisions = 20
+        collisionCount = 0
         while not collided:
             time.sleep(worms.speedVar.get() / 500)
             saveLeft = str(worms.player.left)
@@ -517,24 +519,26 @@ class worms:
             (collided, message) = didCollisionHappen()
 
             if not collided:  # Continue on moving
-                maxCollisions = 10 
-                collisionCount = 0
                 pygame.draw.rect(screen, worms.foregroundColor, worms.player)
                 pygame.display.flip()
+                collisionCount = 0
             else:  # A collision occurred
                 worms.player = Rect((int(saveLeft), int(saveTop)),
                                     (worms.blockSizeVar.get(), worms.blockSizeVar.get()))
                 pygame.draw.rect(screen, 'pink', worms.player)  # This is the collision point
                 pygame.display.flip()
                 direction = random.choice(['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'])
+                collided = False
+                collisionCount += 1
+                if collisionCount > maxCollisions:
+                    print(maxCollisions, collisionCount)
+                    break
 
     # #######################################
     def clearDisplay():
         global debugMode
         screen.fill(worms.backgroundColor)
         pygame.display.flip()
-        if debugMode:
-            print("clearDisplay: ", worms.backgroundColor)
 
     def writeDebugFile(pointsList):
         global debugMode
