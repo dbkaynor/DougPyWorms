@@ -15,20 +15,16 @@
 # You  should  have received a copy of the GNU General Public License  along
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-#
-# import math
 import os
+import sys
 import platform
 import random
-import sys
 import time
 import tkinter
-# from tkinter import messagebox
-# Surface.get_at((x, y))[:3]
 from tkinter.colorchooser import askcolor
 import pygame
 from pygame.locals import Rect
-from screeninfo import get_monitors
+# from screeninfo import get_monitors
 # import inspect
 
 from ToolTip import ToolTip
@@ -44,7 +40,7 @@ if platform.system() == "Windows":
 
 # This positioning is for testing purposes on specific systems
 if os.getenv("COMPUTERNAME") == 'DBKAYNOX-MOBL4':
-    screenPosVertical = -900
+    screenPosVertical = -750
     screenPosHorizontal = 250
 elif platform.system() == "Linux":
     screenPosVertical = 0
@@ -57,28 +53,6 @@ else:
 
 pygame.init()
 pygame.display.init()
-for event in pygame.event.get():
-    if event.type == pygame.WINDOWRESIZED:
-        print('resize')
-
-debugMode = True
-gettrace = getattr(sys, "gettrace", None)
-print(gettrace)
-if gettrace is None:
-    print("No sys.gettrace")
-    debugMode = True
-elif gettrace:
-    print("Hmm, Big Debugger is watching me")
-    debugMode = True
-else:
-    print("No debugger detected")
-    debugMode = False
-    if debugMode:
-        print(" __name__", __name__)
-
-# clock = pygame.time.Clock()
-
-
 # https://www.pygame.org/docs/ref/event.html
 for event in pygame.event.get():
     if event.type == pygame.WINDOWRESIZED:
@@ -91,23 +65,23 @@ class worms:
     clearBeforeDrawCheckButtonVar = tkinter.BooleanVar()
     foregroundColorRandomCheckButtonVar = tkinter.BooleanVar()
     backgroundColorRandomCheckButtonVar = tkinter.BooleanVar()
+    wrapCheckButtonVar = tkinter.BooleanVar()
     showTextCheckButtonVar = tkinter.BooleanVar()
     blockSizeVar = tkinter.IntVar()
     speedVar = tkinter.IntVar()
     menuWidth = 220
     menuHeight = 500
-    screenWidth = 800
-    screenHeight = 550
+    screenWidth = 417
+    screenHeight = 253
     colorList = []
-    foregroundColor = 'white'
-    backgroundColor = "black"
     rectangle_list = []
     player = []
+    foregroundColor = 'orange'
+    backgroundColor = "black"
 
     def main():
         global screenPosVertical
         global screenPosHorizontal
-        global debugMode
 
         pygame.event.pump()
         # event = pygame.event.wait()
@@ -240,7 +214,7 @@ class worms:
         )
         foregroundColorRandomCheckButton.pack(side=tkinter.TOP, anchor=tkinter.W)
         ToolTip(foregroundColorRandomCheckButton, text="Random foreground color")
-        worms.foregroundColorRandomCheckButtonVar.set(True)
+        worms.foregroundColorRandomCheckButtonVar.set(False)
         # #######################################
         backgroundColorRandomCheckButton = tkinter.Checkbutton(
             checkButtonFrame,
@@ -255,6 +229,21 @@ class worms:
         backgroundColorRandomCheckButton.pack(side=tkinter.TOP, anchor=tkinter.W)
         ToolTip(backgroundColorRandomCheckButton, text="Random background color")
         worms.backgroundColorRandomCheckButtonVar.set(False)
+        # #######################################
+        wrapCheckButton = tkinter.Checkbutton(
+            checkButtonFrame,
+            text="Wrap",
+            fg="blue",
+            bg="white",
+            onvalue=True,
+            offvalue=False,
+            command=lambda: print("Wrap (no walls)"),
+            variable=worms.wrapCheckButtonVar
+        )
+        wrapCheckButton.pack(
+            side=tkinter.TOP, anchor=tkinter.W)
+        ToolTip(wrapCheckButton, text="Wrap (no walls)")
+        worms.wrapCheckButtonVar.set(False)
         # #######################################
         showTextCheckButton = tkinter.Checkbutton(
             checkButtonFrame,
@@ -314,23 +303,12 @@ class worms:
         quitButton.pack(side=tkinter.TOP, anchor=tkinter.W, fill=tkinter.X)
         ToolTip(quitButton, text="Quit the program")
         # #######################################
+
         worms.tkRoot.after(500, worms.clearDisplay)
         worms.tkRoot.mainloop()
 
     # #######################################
-    # quitButton.config(state=DISABLED)
-    # quitButton.config(state=NORMAL)
-    # GuiDisable($GUI_ENABLE)
-    # GuiDisable($GUI_DISABLE)
-    def guiDisable(choice):
-        worms.quitButton(state=choice)
-
-        # quitButton.config(state=tkinter.NORMAL)
-    # #######################################
-
     def quitProgram():
-        if debugMode:
-            print("Quit using window X")
         pygame.display.quit
         pygame.quit()
         sys.exit(0)
@@ -338,8 +316,6 @@ class worms:
     # #######################################
     def setUp():
         # worms.guiDisable("tkinter.disabled")
-
-        global debugMode
         global screen
         global tkRoot
 
@@ -354,26 +330,11 @@ class worms:
         pygame.init()
         screen = pygame.display.set_mode((worms.screenWidth, worms.screenHeight),
                                          pygame.RESIZABLE)
-        """
-        The flags argument is a collection of additional options. The depth argument represents the number of bits to use for color.
-        pygame.FULLSCREEN    create a fullscreen display
-        pygame.DOUBLEBUF     recommended for HWSURFACE or OPENGL
-        pygame.HWSURFACE     hardware accelerated, only in FULLSCREEN
-        pygame.OPENGL        create an opengl renderable display
-        pygame.RESIZABLE     display window should be sizeable
-        pygame.NOFRAME       display window will have no border or controls
-        """
+
         # screen = pygame.display.set_mode((worms.screenWidth, worms.screenHeight), pygame.RESIZABLE)
 
         pygame.event.pump()
-        monitorInfo = get_monitors()
-        if debugMode:
-            print("setUp")
-            for monitorInfo in get_monitors():
-                print(str(monitorInfo))
-            pp.pprint(screen.get_size())
-            pp.pprint(pygame.display.Info())
-            pp.pprint(str(event))
+        # monitorInfo = get_monitors()
 
         img = pygame.image.load(
             "".join([os.path.dirname(__file__),
@@ -388,8 +349,6 @@ class worms:
         # Generate list of colors
         colorKeys = pygame.color.THECOLORS.keys()
         worms.colorList = list(colorKeys)
-        if debugMode:
-            print("Number of colors: ", len(worms.colorList))
 
     # #######################################
     def drawScreenText(infoString, screenWidth, screenHeight):
@@ -421,14 +380,30 @@ class worms:
             collide = worms.rectangle_list.count(str(worms.player))
             if collide != 0:
                 return (True, 'collide')
+
             if worms.player.right >= worms.screenWidth:
-                return (True, 'east')
+                if worms.wrapCheckButtonVar.get():
+                    worms.player.right = 0 + worms.blockSizeVar.get()
+                    return (False, 'east')
+                else:
+                    return (True, 'east')
             if worms.player.left <= 0:
-                return (True, 'west')
+                if worms.wrapCheckButtonVar.get():
+                    worms.player.left = worms.screenWidth - worms.blockSizeVar.get()
+                    return (False, 'west')
+                else:
+                    return (True, 'west')
             if worms.player.bottom >= worms.screenHeight:
-                return (True, 'south')
+                if worms.wrapCheckButtonVar.get():
+                    worms.player.bottom = 0 + worms.blockSizeVar.get()
+                    return (False, 'south')
+                else:
+                    return (True, 'south')
             if worms.player.top <= 0:
-                return (True, 'north')
+                if worms.wrapCheckButtonVar.get():
+                    worms.player.top = worms.screenHeight - worms.blockSizeVar.get()
+                else:
+                    return (True, 'north')
 
             # If a collision did not occur continue
             worms.rectangle_list.append(str(worms.player))
@@ -465,16 +440,23 @@ class worms:
             worms.foregroundColor = worms.colorList[color]
 
         # Get the starting position and direction
-        OFFSET = 15  # This is how far from the screen edges to allow
-        horizontalPosition = random.randrange(OFFSET, worms.screenWidth - OFFSET)
-        verticalPosition = random.randrange(OFFSET, worms.screenHeight - OFFSET)
+        # Values need to be an even multiple on blockSize
+        OFFSET = worms.blockSizeVar.get() * 4  # This is how far from the screen edges to allow
+        xx = int(worms.screenWidth / worms.blockSizeVar.get()) * worms.blockSizeVar.get()
+        horizontalPosition = random.randrange(OFFSET, xx - OFFSET, worms.blockSizeVar.get())
+        yy = int(worms.screenHeight / worms.blockSizeVar.get()) * worms.blockSizeVar.get()
+        verticalPosition = random.randrange(OFFSET, yy - OFFSET, worms.blockSizeVar.get())
+
+        # horizontalPosition = random.randrange(OFFSET, worms.screenWidth - OFFSET)
+        # verticalPosition = random.randrange(OFFSET, worms.screenHeight - OFFSET)
         direction = random.choice(['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'])
 
-        # the following are for debugging
+        # the following is for debugging
         # They must be a multiple of worms.blockSizeVar
-        # horizontalPosition = worms.blockSizeVar.get() * 15
-        # verticalPosition = worms.blockSizeVar.get() * 8
-        # direction = 'W'
+        if worms.wrapCheckButtonVar.get():
+            horizontalPosition = worms.blockSizeVar.get() * 30
+            verticalPosition = worms.blockSizeVar.get() * 20
+            direction = 'W'
 
         # Calculate where the player should go
         # (left, top), (width, height)
@@ -483,6 +465,7 @@ class worms:
         pygame.draw.rect(screen, worms.foregroundColor, worms.player)
 
         # This draws a wall to collide with for testing
+        '''
         bs = worms.blockSizeVar.get()
         wall1 = Rect((horizontalPosition - (bs * 4),
                       verticalPosition - (bs * 3)),
@@ -491,7 +474,7 @@ class worms:
             wall1.bottom += worms.blockSizeVar.get()  # Going vertical
             pygame.draw.rect(screen, 'green', wall1)
             worms.rectangle_list.append(str(wall1))
-
+        '''
         pygame.display.flip()
         # this puts info into the status label
         infoString = ' '.join([str(horizontalPosition),
@@ -509,81 +492,69 @@ class worms:
         pygame.display.flip()
 
         # loop until collision
-        maxCollisions = 20
+        maxCollisions = 10
         collisionCount = 0
+        tmpList = []
         while not collided:
-            time.sleep(worms.speedVar.get() / 500)
             saveLeft = str(worms.player.left)
             saveTop = str(worms.player.top)
             calculateMove()
             (collided, message) = didCollisionHappen()
-
             if not collided:  # Continue on moving
                 pygame.draw.rect(screen, worms.foregroundColor, worms.player)
                 pygame.display.flip()
                 collisionCount = 0
+                time.sleep(worms.speedVar.get() / 500)
+                tmpList = []
             else:  # A collision occurred
                 worms.player = Rect((int(saveLeft), int(saveTop)),
                                     (worms.blockSizeVar.get(), worms.blockSizeVar.get()))
-                pygame.draw.rect(screen, 'pink', worms.player)  # This is the collision point
+                pygame.draw.rect(screen, 'pink', worms.player)  # This is a collision point
                 pygame.display.flip()
-                direction = random.choice(['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'])
+                directionList = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW']
+                if collisionCount < maxCollisions:
+                    direction = random.choice(directionList)
+                    tmpList.append(direction)
+                else:
+                    direction = directionList[5]
                 collided = False
                 collisionCount += 1
-                if collisionCount > maxCollisions:
-                    print(maxCollisions, collisionCount)
+                if collisionCount >= maxCollisions:
+                    pygame.draw.rect(screen, 'yellow', worms.player)  # This is the very last collision point
+                    pygame.display.flip()
+                    print('525 Collisions: ', maxCollisions, collisionCount)
+                    tmpList.sort()
+                    print(tmpList, len(tmpList))
+                    for i in directionList:
+                        if i not in tmpList:
+                            print('529 >>>>> ', i)
                     break
 
     # #######################################
     def clearDisplay():
-        global debugMode
         screen.fill(worms.backgroundColor)
         pygame.display.flip()
 
-    def writeDebugFile(pointsList):
-        global debugMode
-        if debugMode:
-            print("writeDebugFile")
-            fileDebug = open("DougPyWorms.txt", "a")
-            for a in pointsList:
-                my = " ".join([str(a[0]), "\t", str(a[1])])
-                fileDebug.write(my + "\n")
-            fileDebug.write("=" * 50 + "\n")
-            fileDebug.close()
-
     def selectForegroundColor():
-        global debugMode
         colors = askcolor(title="Foreground color chooser")
-        if debugMode:
-            print("selectForegroundColor: ", colors[0], colors[1])
         if colors[0] is None:  # cancel was selected
             return
         worms.foregroundColor = colors[1]
         pygame.display.flip()
-        if debugMode:
-            print("selectForegroundColor: ", worms.foregroundColor)
 
     def selectBackgroundColor():
-        global debugMode
         colors = askcolor(title="Background color chooser")
-        if debugMode:
-            print(colors[0], colors[1])
         if colors[0] is None:  # cancel was selected
             return
         worms.backgroundColor = colors[1]
         screen.fill(worms.backgroundColor)
         pygame.display.flip()
-        if debugMode:
-            print("selectBackgroundColor")
 
     def randomBackgroundColor():
-        global debugMode
         color = random.randrange(0, len(worms.colorList))
         worms.backgroundColor = worms.colorList[color]
         screen.fill(worms.backgroundColor)
         pygame.display.flip()
-        if debugMode:
-            print("randomBackgroundColor: ", color, worms.backgroundColor)
 
 
 # This is where we loop until user wants to exit
