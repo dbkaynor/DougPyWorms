@@ -51,12 +51,49 @@ elif platform.system() == "OS X":
 else:
     print("Unknown platform: " + platform.system())
 
+screen = 0
+tkRoot = 0
 pygame.init()
 pygame.display.init()
 # https://www.pygame.org/docs/ref/event.html
 for event in pygame.event.get():
     if event.type == pygame.WINDOWRESIZED:
         print('resize')
+
+
+def setUp():
+    # worms.guiDisable("tkinter.disabled")
+    global screen
+    global tkRoot
+
+    debugFile = "DougPyWorms.txt"
+    if os.path.exists(debugFile):
+        os.remove(debugFile)
+
+    os.environ["SDL_VIDEO_WINDOW_POS"] = "%i, %i" % (
+        screenPosHorizontal,
+        screenPosVertical
+    )
+    pygame.init()
+    screen = pygame.display.set_mode((worms.physicalScreenWidth, worms.physicalScreenHeight),
+                                     pygame.RESIZABLE)
+
+    pygame.event.pump()
+    # monitorInfo = get_monitors()
+
+    img = pygame.image.load(
+        "".join([os.path.dirname(__file__),
+                 os.sep, "worm.png"])
+    )
+    pygame.display.set_icon(img)
+
+    pygame.display.set_caption("Draw some worms", "Worms")
+    screen.fill(worms.backgroundColor)
+    pygame.display.flip()
+
+    # Generate list of colors
+    colorKeys = pygame.color.THECOLORS.keys()
+    worms.colorList = list(colorKeys)
 
 
 class worms:
@@ -71,8 +108,10 @@ class worms:
     speedVar = tkinter.IntVar()
     menuWidth = 220
     menuHeight = 500
-    screenWidth = 417
-    screenHeight = 253
+    physicalScreenWidth = 417
+    virtualScreenWidth = 0
+    physicalScreenHeight = 253
+    virtualScreenHeight = 0
     colorList = []
     rectangle_list = []
     player = []
@@ -109,7 +148,8 @@ class worms:
             file="".join([os.path.dirname(__file__), os.sep, "worm.png"])
         )
         worms.tkRoot.iconphoto(True, image)
-        worms.setUp()
+        setUp()
+
         # #######################################
         infoLabel = tkinter.Label(
             worms.tkRoot,
@@ -243,7 +283,7 @@ class worms:
         wrapCheckButton.pack(
             side=tkinter.TOP, anchor=tkinter.W)
         ToolTip(wrapCheckButton, text="Wrap (no walls)")
-        worms.wrapCheckButtonVar.set(False)
+        worms.wrapCheckButtonVar.set(True)
         # #######################################
         showTextCheckButton = tkinter.Checkbutton(
             checkButtonFrame,
@@ -314,44 +354,7 @@ class worms:
         sys.exit(0)
 
     # #######################################
-    def setUp():
-        # worms.guiDisable("tkinter.disabled")
-        global screen
-        global tkRoot
-
-        debugFile = "DougPyWorms.txt"
-        if os.path.exists(debugFile):
-            os.remove(debugFile)
-
-        os.environ["SDL_VIDEO_WINDOW_POS"] = "%i, %i" % (
-            screenPosHorizontal,
-            screenPosVertical
-        )
-        pygame.init()
-        screen = pygame.display.set_mode((worms.screenWidth, worms.screenHeight),
-                                         pygame.RESIZABLE)
-
-        # screen = pygame.display.set_mode((worms.screenWidth, worms.screenHeight), pygame.RESIZABLE)
-
-        pygame.event.pump()
-        # monitorInfo = get_monitors()
-
-        img = pygame.image.load(
-            "".join([os.path.dirname(__file__),
-                     os.sep, "worm.png"])
-        )
-        pygame.display.set_icon(img)
-
-        pygame.display.set_caption("Draw some worms", "Worms")
-        screen.fill(worms.backgroundColor)
-        pygame.display.flip()
-
-        # Generate list of colors
-        colorKeys = pygame.color.THECOLORS.keys()
-        worms.colorList = list(colorKeys)
-
-    # #######################################
-    def drawScreenText(infoString, screenWidth, screenHeight):
+    def drawScreenText(infoString, physicalScreenWidth, physicalScreenHeight):
         directionFont = pygame.font.SysFont('Verdana', 20)
         infoFont = pygame.font.SysFont('Verdana', 20)
 
@@ -364,13 +367,13 @@ class worms:
         fgText = infoFont.render(worms.foregroundColor, True, fontColor)
         bgText = infoFont.render(worms.backgroundColor, True, fontColor)
 
-        screen.blit(northText, (screenWidth / 2, 10))
-        screen.blit(southText, (screenWidth / 2, screenHeight - 30))
-        screen.blit(eastText, (screenWidth - 60, screenHeight / 2))
-        screen.blit(westText, (10, screenHeight / 2))
-        screen.blit(infoText, (screenWidth / 2 - 35, screenHeight / 2 - 10))
-        screen.blit(bgText, (screenWidth / 2 - 35, screenHeight / 2 - 35))
-        screen.blit(fgText, (screenWidth / 2 - 35, screenHeight / 2 - 60))
+        screen.blit(northText, (physicalScreenWidth / 2, 10))
+        screen.blit(southText, (physicalScreenWidth / 2, physicalScreenHeight - 30))
+        screen.blit(eastText, (physicalScreenWidth - 60, physicalScreenHeight / 2))
+        screen.blit(westText, (10, physicalScreenHeight / 2))
+        screen.blit(infoText, (physicalScreenWidth / 2 - 35, physicalScreenHeight / 2 - 10))
+        screen.blit(bgText, (physicalScreenWidth / 2 - 35, physicalScreenHeight / 2 - 35))
+        screen.blit(fgText, (physicalScreenWidth / 2 - 35, physicalScreenHeight / 2 - 60))
         pygame.display.flip
 
     # #######################################
@@ -381,19 +384,17 @@ class worms:
             if collide != 0:
                 return (True, 'collide')
 
-            if worms.player.right >= worms.screenWidth:
+            if worms.player.right >= worms.physicalScreenWidth:
                 if worms.wrapCheckButtonVar.get():
                     worms.player.right = 0 + worms.blockSizeVar.get()
-                    return (False, 'east')
                 else:
                     return (True, 'east')
             if worms.player.left <= 0:
                 if worms.wrapCheckButtonVar.get():
-                    worms.player.left = worms.screenWidth - worms.blockSizeVar.get()
+                    worms.player.left = worms.physicalScreenWidth - worms.blockSizeVar.get()
                     return (False, 'west')
                 else:
                     return (True, 'west')
-            if worms.player.bottom >= worms.screenHeight:
                 if worms.wrapCheckButtonVar.get():
                     worms.player.bottom = 0 + worms.blockSizeVar.get()
                     return (False, 'south')
@@ -401,7 +402,7 @@ class worms:
                     return (True, 'south')
             if worms.player.top <= 0:
                 if worms.wrapCheckButtonVar.get():
-                    worms.player.top = worms.screenHeight - worms.blockSizeVar.get()
+                    worms.player.top = worms.physicalScreenHeight - worms.blockSizeVar.get()
                 else:
                     return (True, 'north')
 
@@ -425,7 +426,7 @@ class worms:
         # ----------------------
         # Start drawWorms here
 
-        worms.screenWidth, worms.screenHeight = screen.get_size()
+        worms.physicalScreenWidth, worms.physicalScreenHeight = screen.get_size()
         worms.rectangle_list = []
         collided = False
 
@@ -441,14 +442,19 @@ class worms:
 
         # Get the starting position and direction
         # Values need to be an even multiple on blockSize
-        OFFSET = worms.blockSizeVar.get() * 4  # This is how far from the screen edges to allow
-        xx = int(worms.screenWidth / worms.blockSizeVar.get()) * worms.blockSizeVar.get()
-        horizontalPosition = random.randrange(OFFSET, xx - OFFSET, worms.blockSizeVar.get())
-        yy = int(worms.screenHeight / worms.blockSizeVar.get()) * worms.blockSizeVar.get()
-        verticalPosition = random.randrange(OFFSET, yy - OFFSET, worms.blockSizeVar.get())
+        try:
+            OFFSET = worms.blockSizeVar.get() * 2  # This is how far from the screen edges to allow
+            xx = int(worms.physicalScreenWidth / worms.blockSizeVar.get()) * worms.blockSizeVar.get()
+            horizontalPosition = random.randrange(OFFSET, xx - OFFSET, worms.blockSizeVar.get())
+            yy = int(worms.physicalScreenHeight / worms.blockSizeVar.get()) * worms.blockSizeVar.get()
+            verticalPosition = random.randrange(OFFSET, yy - OFFSET, worms.blockSizeVar.get())
+        except Exception as e:
+            print('ValueError: block size versus screen size. ', str(e))
+            horizontalPosition = 10
+            verticalPosition = 10
 
-        # horizontalPosition = random.randrange(OFFSET, worms.screenWidth - OFFSET)
-        # verticalPosition = random.randrange(OFFSET, worms.screenHeight - OFFSET)
+        # horizontalPosition = random.randrange(OFFSET, worms.physicalScreenWidth - OFFSET)
+        # verticalPosition = random.randrange(OFFSET, worms.physicalScreenHeight - OFFSET)
         direction = random.choice(['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'])
 
         # the following is for debugging
@@ -460,9 +466,10 @@ class worms:
 
         # Calculate where the player should go
         # (left, top), (width, height)
+        # This is the first location
         worms.player = Rect((horizontalPosition, verticalPosition),
                             (worms.blockSizeVar.get(), worms.blockSizeVar.get()))
-        pygame.draw.rect(screen, worms.foregroundColor, worms.player)
+        pygame.draw.rect(screen, 'green', worms.player)
 
         # This draws a wall to collide with for testing
         '''
@@ -487,12 +494,12 @@ class worms:
 
         if worms.showTextCheckButtonVar.get():
             worms.drawScreenText(infoString,
-                                 worms.screenWidth,
-                                 worms.screenHeight)
+                                 worms.physicalScreenWidth,
+                                 worms.physicalScreenHeight)
         pygame.display.flip()
 
         # loop until collision
-        maxCollisions = 10
+        maxCollisions = 1000
         collisionCount = 0
         tmpList = []
         while not collided:
@@ -522,12 +529,12 @@ class worms:
                 if collisionCount >= maxCollisions:
                     pygame.draw.rect(screen, 'yellow', worms.player)  # This is the very last collision point
                     pygame.display.flip()
-                    print('525 Collisions: ', maxCollisions, collisionCount)
+                    print('527 Collisions: ', maxCollisions, collisionCount, len(tmpList))
                     tmpList.sort()
-                    print(tmpList, len(tmpList))
+                    # print(tmpList, len(tmpList))
                     for i in directionList:
                         if i not in tmpList:
-                            print('529 >>>>> ', i)
+                            print('532 >>>>> ', i)
                     break
 
     # #######################################
