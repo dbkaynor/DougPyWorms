@@ -395,6 +395,7 @@ class worms:
                     return (False, 'west')
                 else:
                     return (True, 'west')
+            if worms.player.bottom >= worms.physicalScreenHeight:
                 if worms.wrapCheckButtonVar.get():
                     worms.player.bottom = 0 + worms.blockSizeVar.get()
                     return (False, 'south')
