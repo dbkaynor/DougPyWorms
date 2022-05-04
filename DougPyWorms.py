@@ -40,7 +40,7 @@ if platform.system() == "Windows":
 
 # This positioning is for testing purposes on specific systems
 if os.getenv("COMPUTERNAME") == 'DBKAYNOX-MOBL4':
-    screenPosVertical = -750
+    screenPosVertical = -550
     screenPosHorizontal = 250
 elif platform.system() == "Linux":
     screenPosVertical = 0
@@ -354,7 +354,7 @@ class worms:
         sys.exit(0)
 
     # #######################################
-    def drawScreenText(infoString, physicalScreenWidth, physicalScreenHeight):
+    def drawScreenText(infoString, virtualScreenWidth, virtualScreenHeight):
         directionFont = pygame.font.SysFont('Verdana', 20)
         infoFont = pygame.font.SysFont('Verdana', 20)
 
@@ -367,13 +367,13 @@ class worms:
         fgText = infoFont.render(worms.foregroundColor, True, fontColor)
         bgText = infoFont.render(worms.backgroundColor, True, fontColor)
 
-        screen.blit(northText, (physicalScreenWidth / 2, 10))
-        screen.blit(southText, (physicalScreenWidth / 2, physicalScreenHeight - 30))
-        screen.blit(eastText, (physicalScreenWidth - 60, physicalScreenHeight / 2))
-        screen.blit(westText, (10, physicalScreenHeight / 2))
-        screen.blit(infoText, (physicalScreenWidth / 2 - 35, physicalScreenHeight / 2 - 10))
-        screen.blit(bgText, (physicalScreenWidth / 2 - 35, physicalScreenHeight / 2 - 35))
-        screen.blit(fgText, (physicalScreenWidth / 2 - 35, physicalScreenHeight / 2 - 60))
+        screen.blit(northText, (virtualScreenWidth / 2, 10))
+        screen.blit(southText, (virtualScreenWidth / 2, virtualScreenHeight - 30))
+        screen.blit(eastText, (virtualScreenWidth - 60, virtualScreenHeight / 2))
+        screen.blit(westText, (10, virtualScreenHeight / 2))
+        screen.blit(infoText, (virtualScreenWidth / 2 - 35, virtualScreenHeight / 2 - 10))
+        screen.blit(bgText, (virtualScreenWidth / 2 - 35, virtualScreenHeight / 2 - 35))
+        screen.blit(fgText, (virtualScreenWidth / 2 - 35, virtualScreenHeight / 2 - 60))
         pygame.display.flip
 
     # #######################################
@@ -384,18 +384,18 @@ class worms:
             if collide != 0:
                 return (True, 'collide')
 
-            if worms.player.right >= worms.physicalScreenWidth:
+            if worms.player.right >= worms.virtualScreenWidth:
                 if worms.wrapCheckButtonVar.get():
                     worms.player.right = 0 + worms.blockSizeVar.get()
                 else:
                     return (True, 'east')
             if worms.player.left <= 0:
                 if worms.wrapCheckButtonVar.get():
-                    worms.player.left = worms.physicalScreenWidth - worms.blockSizeVar.get()
+                    worms.player.left = worms.virtualScreenWidth - worms.blockSizeVar.get()
                     return (False, 'west')
                 else:
                     return (True, 'west')
-            if worms.player.bottom >= worms.physicalScreenHeight:
+            if worms.player.bottom >= worms.virtualScreenHeight:
                 if worms.wrapCheckButtonVar.get():
                     worms.player.bottom = 0 + worms.blockSizeVar.get()
                     return (False, 'south')
@@ -403,7 +403,7 @@ class worms:
                     return (True, 'south')
             if worms.player.top <= 0:
                 if worms.wrapCheckButtonVar.get():
-                    worms.player.top = worms.physicalScreenHeight - worms.blockSizeVar.get()
+                    worms.player.top = worms.virtualScreenHeight - worms.blockSizeVar.get()
                 else:
                     return (True, 'north')
 
@@ -428,6 +428,12 @@ class worms:
         # Start drawWorms here
 
         worms.physicalScreenWidth, worms.physicalScreenHeight = screen.get_size()
+        print(worms.physicalScreenWidth, worms.physicalScreenHeight)
+
+        worms.virtualScreenWidth = int(worms.physicalScreenWidth / worms.blockSizeVar.get()) * worms.blockSizeVar.get()
+        worms.virtualScreenHeight = int(worms.physicalScreenHeight / worms.blockSizeVar.get()) * worms.blockSizeVar.get()
+        print(worms.virtualScreenWidth, worms.virtualScreenHeight)
+
         worms.rectangle_list = []
         collided = False
 
@@ -445,17 +451,17 @@ class worms:
         # Values need to be an even multiple on blockSize
         try:
             OFFSET = worms.blockSizeVar.get() * 2  # This is how far from the screen edges to allow
-            xx = int(worms.physicalScreenWidth / worms.blockSizeVar.get()) * worms.blockSizeVar.get()
+            xx = int(worms.virtualScreenWidth / worms.blockSizeVar.get()) * worms.blockSizeVar.get()
             horizontalPosition = random.randrange(OFFSET, xx - OFFSET, worms.blockSizeVar.get())
-            yy = int(worms.physicalScreenHeight / worms.blockSizeVar.get()) * worms.blockSizeVar.get()
+            yy = int(worms.virtualScreenHeight / worms.blockSizeVar.get()) * worms.blockSizeVar.get()
             verticalPosition = random.randrange(OFFSET, yy - OFFSET, worms.blockSizeVar.get())
         except Exception as e:
-            print('ValueError: block size versus screen size. ', str(e))
+            print(str(e), ' block size versus screen size.')
             horizontalPosition = 10
             verticalPosition = 10
 
-        # horizontalPosition = random.randrange(OFFSET, worms.physicalScreenWidth - OFFSET)
-        # verticalPosition = random.randrange(OFFSET, worms.physicalScreenHeight - OFFSET)
+        # horizontalPosition = random.randrange(OFFSET, worms.virtualScreenWidth - OFFSET)
+        # verticalPosition = random.randrange(OFFSET, worms.virtualScreenHeight - OFFSET)
         direction = random.choice(['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'])
 
         # the following is for debugging
@@ -495,8 +501,8 @@ class worms:
 
         if worms.showTextCheckButtonVar.get():
             worms.drawScreenText(infoString,
-                                 worms.physicalScreenWidth,
-                                 worms.physicalScreenHeight)
+                                 worms.virtualScreenWidth,
+                                 worms.virtualScreenHeight)
         pygame.display.flip()
 
         # loop until collision
