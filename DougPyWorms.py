@@ -15,6 +15,7 @@
 # You  should  have received a copy of the GNU General Public License  along
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+# from fileinput import lineno
 import os
 import sys
 import platform
@@ -28,6 +29,7 @@ from pygame.locals import Rect
 # import inspect
 
 from ToolTip import ToolTip
+import inspect
 import pprint
 
 # Clear the terminal at progarm startup
@@ -49,7 +51,7 @@ elif platform.system() == "OS X":
     screenPosVertical = 0
     screenPosHorizontal = 0
 else:
-    print("Unknown platform: " + platform.system())
+    print("52 Unknown platform: " + platform.system())
 
 screen = 0
 tkRoot = 0
@@ -58,7 +60,7 @@ pygame.display.init()
 # https://www.pygame.org/docs/ref/event.html
 for event in pygame.event.get():
     if event.type == pygame.WINDOWRESIZED:
-        print('resize')
+        print('61 resize')
 
 
 def setUp():
@@ -96,6 +98,12 @@ def setUp():
     worms.colorList = list(colorKeys)
 
 
+def line_info(message):
+    f = inspect.currentframe()
+    i = inspect.getframeinfo(f.f_back)
+    print(f"{os.path.basename(i.filename)}:{i.lineno}  called from {i.function}  {message}")
+
+
 class worms:
     tkRoot = tkinter.Tk()
     infoLabelVar = tkinter.StringVar()
@@ -124,7 +132,7 @@ class worms:
 
         pygame.event.pump()
         # event = pygame.event.wait()
-        # print('event: ', str(event))
+        # print('127 event: ', str(event))
 
         geometry = "".join(
             [
@@ -143,7 +151,7 @@ class worms:
         worms.tkRoot.title("Draw some worms")
         main_dialog = tkinter.Frame(worms.tkRoot)
         main_dialog.pack(side=tkinter.TOP, fill=tkinter.X)
-        print("dirname:    ", os.path.dirname(__file__))
+        print("146 dirname:    ", os.path.dirname(__file__))
         image = tkinter.PhotoImage(
             file="".join([os.path.dirname(__file__), os.sep, "worm.png"])
         )
@@ -383,26 +391,29 @@ class worms:
             collide = worms.rectangle_list.count(str(worms.player))
             if collide != 0:
                 return (True, 'collide')
-
             if worms.player.right >= worms.virtualScreenWidth:
                 if worms.wrapCheckButtonVar.get():
-                    worms.player.right = 0 + worms.blockSizeVar.get()
+                    line_info('worms.player.right')
+                    worms.player.right = worms.blockSizeVar.get()
                 else:
                     return (True, 'east')
             if worms.player.left <= 0:
                 if worms.wrapCheckButtonVar.get():
+                    line_info('worms.player.left')
                     worms.player.left = worms.virtualScreenWidth - worms.blockSizeVar.get()
                     return (False, 'west')
                 else:
                     return (True, 'west')
             if worms.player.bottom >= worms.virtualScreenHeight:
                 if worms.wrapCheckButtonVar.get():
-                    worms.player.bottom = 0 + worms.blockSizeVar.get()
+                    line_info('worms.player.bottom')
+                    worms.player.bottom = worms.blockSizeVar.get()
                     return (False, 'south')
                 else:
                     return (True, 'south')
             if worms.player.top <= 0:
                 if worms.wrapCheckButtonVar.get():
+                    line_info('worms.player.top')
                     worms.player.top = worms.virtualScreenHeight - worms.blockSizeVar.get()
                 else:
                     return (True, 'north')
@@ -413,7 +424,7 @@ class worms:
 
         # ----------------------
         def calculateMove():
-            # print('clock.tick: ', str(clock.tick(60)))
+            # print('416 clock.tick: ', str(clock.tick(60)))
             if direction == 'N' or direction == 'NE' or direction == 'NW':
                 worms.player.bottom -= worms.blockSizeVar.get()  # Going up (North)
             if direction == 'S' or direction == 'SE' or direction == 'SW':
@@ -428,11 +439,10 @@ class worms:
         # Start drawWorms here
 
         worms.physicalScreenWidth, worms.physicalScreenHeight = screen.get_size()
-        print(worms.physicalScreenWidth, worms.physicalScreenHeight)
-
+        print('431 physical:', worms.physicalScreenWidth, worms.physicalScreenHeight)
         worms.virtualScreenWidth = int(worms.physicalScreenWidth / worms.blockSizeVar.get()) * worms.blockSizeVar.get()
         worms.virtualScreenHeight = int(worms.physicalScreenHeight / worms.blockSizeVar.get()) * worms.blockSizeVar.get()
-        print(worms.virtualScreenWidth, worms.virtualScreenHeight)
+        print('434 virtual:', worms.virtualScreenWidth, worms.virtualScreenHeight)
 
         worms.rectangle_list = []
         collided = False
@@ -456,7 +466,7 @@ class worms:
             yy = int(worms.virtualScreenHeight / worms.blockSizeVar.get()) * worms.blockSizeVar.get()
             verticalPosition = random.randrange(OFFSET, yy - OFFSET, worms.blockSizeVar.get())
         except Exception as e:
-            print(str(e), ' block size versus screen size.')
+            print(str(e), ' 458 block size versus screen size.')
             horizontalPosition = 10
             verticalPosition = 10
 
@@ -467,9 +477,11 @@ class worms:
         # the following is for debugging
         # They must be a multiple of worms.blockSizeVar
         if worms.wrapCheckButtonVar.get():
-            horizontalPosition = worms.blockSizeVar.get() * 30
-            verticalPosition = worms.blockSizeVar.get() * 20
-            direction = 'W'
+            line_info('xxx')
+            pass
+            # horizontalPosition = worms.blockSizeVar.get() * 20
+            # verticalPosition = worms.blockSizeVar.get() * 20
+            # direction = 'W'
 
         # Calculate where the player should go
         # (left, top), (width, height)
@@ -506,9 +518,9 @@ class worms:
         pygame.display.flip()
 
         # loop until collision
-        maxCollisions = 1000
+        maxCollisions = 100
         collisionCount = 0
-        tmpList = []
+        tmpList = []  # tmpList is used to verify that all possible directions have been tried
         while not collided:
             saveLeft = str(worms.player.left)
             saveTop = str(worms.player.top)
@@ -532,16 +544,19 @@ class worms:
                 else:
                     direction = directionList[5]
                 collided = False
+                # print('534 ', len(tmpList))
                 collisionCount += 1
                 if collisionCount >= maxCollisions:
+                    print('537', collisionCount)
                     pygame.draw.rect(screen, 'yellow', worms.player)  # This is the very last collision point
                     pygame.display.flip()
-                    print('527 Collisions: ', maxCollisions, collisionCount, len(tmpList))
+                    print('540 Collisions: ', maxCollisions, collisionCount, len(tmpList))
                     tmpList.sort()
-                    # print(tmpList, len(tmpList))
+                    print('542', len(tmpList))
+                    print('543 Not in tmpList')
                     for i in directionList:
                         if i not in tmpList:
-                            print('532 >>>>> ', i)
+                            print('545 >>>>> ', i)
                     break
 
     # #######################################

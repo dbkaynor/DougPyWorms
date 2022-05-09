@@ -12,7 +12,7 @@
         "pygame",
         "vertical"
     ],
-    "editor.fontSize": 8,
+    "editor.fontSize": 12,
     "editor.renderWhitespace": "all",
     "editor.bracketPairColorization.enabled": true,
     "editor.defaultFormatter": "ms-python.vscode-pylance",
