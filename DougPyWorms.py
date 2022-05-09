@@ -15,6 +15,8 @@
 # You  should  have received a copy of the GNU General Public License  along
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+# https://www.pygame.org/docs/
+
 # from fileinput import lineno
 import os
 import sys
@@ -391,27 +393,27 @@ class worms:
             collide = worms.rectangle_list.count(str(worms.player))
             if collide != 0:
                 return (True, 'collide')
-            if worms.player.right >= worms.virtualScreenWidth:
+            if worms.player.right > worms.virtualScreenWidth:
                 if worms.wrapCheckButtonVar.get():
                     line_info('worms.player.right')
                     worms.player.right = worms.blockSizeVar.get()
                 else:
                     return (True, 'east')
-            if worms.player.left <= 0:
+            if worms.player.left < 0:
                 if worms.wrapCheckButtonVar.get():
                     line_info('worms.player.left')
                     worms.player.left = worms.virtualScreenWidth - worms.blockSizeVar.get()
                     return (False, 'west')
                 else:
                     return (True, 'west')
-            if worms.player.bottom >= worms.virtualScreenHeight:
+            if worms.player.bottom > worms.virtualScreenHeight:
                 if worms.wrapCheckButtonVar.get():
                     line_info('worms.player.bottom')
                     worms.player.bottom = worms.blockSizeVar.get()
                     return (False, 'south')
                 else:
                     return (True, 'south')
-            if worms.player.top <= 0:
+            if worms.player.top < 0:
                 if worms.wrapCheckButtonVar.get():
                     line_info('worms.player.top')
                     worms.player.top = worms.virtualScreenHeight - worms.blockSizeVar.get()
@@ -478,10 +480,15 @@ class worms:
         # They must be a multiple of worms.blockSizeVar
         if worms.wrapCheckButtonVar.get():
             line_info('xxx')
-            pass
-            # horizontalPosition = worms.blockSizeVar.get() * 20
-            # verticalPosition = worms.blockSizeVar.get() * 20
-            # direction = 'W'
+            #  worms.virtualScreenWidth = int(worms.physicalScreenWidth / worms.blockSizeVar.get()) * worms.blockSizeVar.get()
+            bs = worms.blockSizeVar.get()
+            vsw = worms.virtualScreenWidth
+            vsh = worms.virtualScreenHeight
+            horizontalPosition = int(vsw / 2)
+            verticalPosition = int(vsh / 2)
+            direction = 'E'
+            horizontalPosition = 200
+            verticalPosition = 120
 
         # Calculate where the player should go
         # (left, top), (width, height)
