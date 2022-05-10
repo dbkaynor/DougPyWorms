@@ -116,6 +116,7 @@ class worms:
     showTextCheckButtonVar = tkinter.BooleanVar()
     blockSizeVar = tkinter.IntVar()
     speedVar = tkinter.IntVar()
+    colorPatternRadioVar = tkinter.IntVar()
     menuWidth = 220
     menuHeight = 500
     physicalScreenWidth = 417
@@ -159,7 +160,6 @@ class worms:
         )
         worms.tkRoot.iconphoto(True, image)
         setUp()
-
         # #######################################
         infoLabel = tkinter.Label(
             worms.tkRoot,
@@ -234,6 +234,7 @@ class worms:
             bg="white",
             width=20,
             highlightbackground="black",
+            highlightthickness=1,
             relief=tkinter.RAISED
         )
         checkButtonFrame.pack(side=tkinter.TOP, anchor=tkinter.W, fill=tkinter.X)
@@ -309,6 +310,52 @@ class worms:
             side=tkinter.TOP, anchor=tkinter.W)
         ToolTip(showTextCheckButton, text="Show text")
         worms.showTextCheckButtonVar.set(True)
+        # #######################################
+        radioButtonFrame = tkinter.Frame(
+            worms.tkRoot,
+            bg="white",
+            width=20,
+            highlightbackground="black",
+            highlightthickness=1
+        )
+        radioButtonFrame.pack(side=tkinter.TOP, anchor=tkinter.W, fill=tkinter.X)
+        # #######################################
+        colorPatternRadio0 = tkinter.Radiobutton(
+            radioButtonFrame,
+            fg="blue",
+            bg="white",
+            text="Never change color",
+            value=0,
+            command=lambda: print("Never change color"),
+            variable=worms.colorPatternRadioVar
+        )
+        colorPatternRadio0.pack(side=tkinter.TOP, anchor=tkinter.W)
+        ToolTip(colorPatternRadio0, "Never change color.")
+        # #######################################
+        colorPatternRadio1 = tkinter.Radiobutton(
+            radioButtonFrame,
+            fg="blue",
+            bg="white",
+            text="Change color every step",
+            value=1,
+            command=lambda: print("Change color every step"),
+            variable=worms.colorPatternRadioVar
+        )
+        colorPatternRadio1.pack(side=tkinter.TOP, anchor=tkinter.W)
+        ToolTip(colorPatternRadio1, "Change color every step.")
+        # #######################################
+        colorPatternRadio2 = tkinter.Radiobutton(
+            radioButtonFrame,
+            fg="blue",
+            bg="white",
+            text="Change color every corner",
+            value=2,
+            command=lambda: print("Change color every corner"),
+            variable=worms.colorPatternRadioVar
+        )
+        colorPatternRadio2.pack(side=tkinter.TOP, anchor=tkinter.W)
+        ToolTip(colorPatternRadio2, "Change color every corner.")
+        worms.colorPatternRadioVar.set(0)
         # #######################################
         speedSelect = tkinter.Scale(
             worms.tkRoot,
