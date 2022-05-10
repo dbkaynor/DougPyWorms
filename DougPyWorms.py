@@ -478,10 +478,9 @@ class worms:
 
         # the following is for debugging
         # They must be a multiple of worms.blockSizeVar
+        """
         if worms.wrapCheckButtonVar.get():
-            line_info('xxx')
             #  worms.virtualScreenWidth = int(worms.physicalScreenWidth / worms.blockSizeVar.get()) * worms.blockSizeVar.get()
-            bs = worms.blockSizeVar.get()
             vsw = worms.virtualScreenWidth
             vsh = worms.virtualScreenHeight
             horizontalPosition = int(vsw / 2)
@@ -489,6 +488,7 @@ class worms:
             direction = 'E'
             horizontalPosition = 200
             verticalPosition = 120
+        """
 
         # Calculate where the player should go
         # (left, top), (width, height)
@@ -554,16 +554,19 @@ class worms:
                 # print('534 ', len(tmpList))
                 collisionCount += 1
                 if collisionCount >= maxCollisions:
-                    print('537', collisionCount)
                     pygame.draw.rect(screen, 'yellow', worms.player)  # This is the very last collision point
                     pygame.display.flip()
-                    print('540 Collisions: ', maxCollisions, collisionCount, len(tmpList))
+                    line_info(''.join('Collisions:',
+                                      str(maxCollisions),
+                                      str(collisionCount),
+                                      str(len(tmpList))))
+
                     tmpList.sort()
-                    print('542', len(tmpList))
-                    print('543 Not in tmpList')
+                    line_info(''.join('561 length tmpList: ',
+                                      str(len(tmpList))))
                     for i in directionList:
                         if i not in tmpList:
-                            print('545 >>>>> ', i)
+                            line_info(''.join('Not in tmpList: ' + str(i)))
                     break
 
     # #######################################
