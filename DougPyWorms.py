@@ -86,7 +86,7 @@ def setUp():
     # monitorInfo = get_monitors()
 
     img = pygame.image.load(
-        "".join([os.path.dirname(__file__),
+        ''.join([os.path.dirname(__file__),
                  os.sep, "worm.png"])
     )
     pygame.display.set_icon(img)
@@ -117,7 +117,7 @@ class worms:
     blockSizeVar = tkinter.IntVar()
     speedVar = tkinter.IntVar()
     colorPatternRadioVar = tkinter.IntVar()
-    menuWidth = 220
+    menuWidth = 250
     menuHeight = 500
     physicalScreenWidth = 417
     virtualScreenWidth = 0
@@ -348,13 +348,25 @@ class worms:
             radioButtonFrame,
             fg="blue",
             bg="white",
-            text="Change color every corner",
+            text="Change forground color every corner",
             value=2,
-            command=lambda: print("Change color every corner"),
+            command=lambda: print("Change forground color every corner"),
             variable=worms.colorPatternRadioVar
         )
         colorPatternRadio2.pack(side=tkinter.TOP, anchor=tkinter.W)
-        ToolTip(colorPatternRadio2, "Change color every corner.")
+        ToolTip(colorPatternRadio2, "Change forground color every corner.")
+        # #######################################
+        colorPatternRadio3 = tkinter.Radiobutton(
+            radioButtonFrame,
+            fg="blue",
+            bg="white",
+            text="Change foreground color after collision",
+            value=3,
+            command=lambda: print("Change foreground color after collision"),
+            variable=worms.colorPatternRadioVar
+        )
+        colorPatternRadio3.pack(side=tkinter.TOP, anchor=tkinter.W)
+        ToolTip(colorPatternRadio3, "Change foreground color after collision.")
         worms.colorPatternRadioVar.set(0)
         # #######################################
         speedSelect = tkinter.Scale(
@@ -371,7 +383,7 @@ class worms:
         )
         speedSelect.pack(side=tkinter.TOP, anchor=tkinter.W, fill=tkinter.X)
         ToolTip(speedSelect, "Select speed.")
-        worms.speedVar.set(10)
+        worms.speedVar.set(5)
         # #######################################
         blockSize = tkinter.Scale(
             worms.tkRoot,
@@ -478,7 +490,6 @@ class worms:
                 worms.player.bottom -= worms.blockSizeVar.get()  # Going up (North)
             if direction == 'S' or direction == 'SE' or direction == 'SW':
                 worms.player.top += worms.blockSizeVar.get()  # Going down (South)
-
             if direction == 'E' or direction == 'NE' or direction == 'SE':
                 worms.player.left += worms.blockSizeVar.get()  # Going right (East)
             if direction == 'W' or direction == 'NW' or direction == 'SW':
@@ -515,7 +526,7 @@ class worms:
             yy = int(worms.virtualScreenHeight / worms.blockSizeVar.get()) * worms.blockSizeVar.get()
             verticalPosition = random.randrange(OFFSET, yy - OFFSET, worms.blockSizeVar.get())
         except Exception as e:
-            print(str(e), ' 458 block size versus screen size.')
+            print(' '.join([str(e), '458 block size versus screen size.']))
             horizontalPosition = 10
             verticalPosition = 10
 
@@ -523,46 +534,20 @@ class worms:
         # verticalPosition = random.randrange(OFFSET, worms.virtualScreenHeight - OFFSET)
         direction = random.choice(['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'])
 
-        # the following is for debugging
-        # They must be a multiple of worms.blockSizeVar
-        """
-        if worms.wrapCheckButtonVar.get():
-            #  worms.virtualScreenWidth = int(worms.physicalScreenWidth / worms.blockSizeVar.get()) * worms.blockSizeVar.get()
-            vsw = worms.virtualScreenWidth
-            vsh = worms.virtualScreenHeight
-            horizontalPosition = int(vsw / 2)
-            verticalPosition = int(vsh / 2)
-            direction = 'E'
-            horizontalPosition = 200
-            verticalPosition = 120
-        """
-
         # Calculate where the player should go
         # (left, top), (width, height)
         # This is the first location
         worms.player = Rect((horizontalPosition, verticalPosition),
                             (worms.blockSizeVar.get(), worms.blockSizeVar.get()))
         pygame.draw.rect(screen, 'green', worms.player)
-
-        # This draws a wall to collide with for testing
-        '''
-        bs = worms.blockSizeVar.get()
-        wall1 = Rect((horizontalPosition - (bs * 4),
-                      verticalPosition - (bs * 3)),
-                     (bs, bs))
-        for x in range(5):
-            wall1.bottom += worms.blockSizeVar.get()  # Going vertical
-            pygame.draw.rect(screen, 'green', wall1)
-            worms.rectangle_list.append(str(wall1))
-        '''
         pygame.display.flip()
         # this puts info into the status label
         infoString = ' '.join([str(horizontalPosition),
                                str(verticalPosition),
                                str(direction)])
-        worms.infoLabelVar.set('  '.join([infoString,
-                                          worms.foregroundColor,
-                                          worms.backgroundColor]))
+        worms.infoLabelVar.set(' '.join([infoString,
+                                         worms.foregroundColor,
+                                         worms.backgroundColor]))
         worms.tkRoot.update_idletasks()
 
         if worms.showTextCheckButtonVar.get():
@@ -581,7 +566,20 @@ class worms:
             calculateMove()
             (collided, message) = didCollisionHappen()
             if not collided:  # Continue on moving
-                pygame.draw.rect(screen, worms.foregroundColor, worms.player)
+                # Now we handle the color options
+                # 0 Never change color
+                # 1 Change color every step
+                # 2 Change color every corner
+                # 3 Change foreground color after collision
+                if worms.colorPatternRadioVar.get() == 0:
+                    color = worms.foregroundColor
+                elif worms.colorPatternRadioVar.get() == 1:
+                    colorListValue = random.randrange(0, len(worms.colorList))
+                    color = worms.colorList[colorListValue]
+                else:
+                    print('?????')
+                print(color, worms.colorPatternRadioVar.get())
+                pygame.draw.rect(screen, color, worms.player)
                 pygame.display.flip()
                 collisionCount = 0
                 time.sleep(worms.speedVar.get() / 500)
@@ -603,17 +601,15 @@ class worms:
                 if collisionCount >= maxCollisions:
                     pygame.draw.rect(screen, 'yellow', worms.player)  # This is the very last collision point
                     pygame.display.flip()
-                    line_info(''.join('Collisions:',
-                                      str(maxCollisions),
-                                      str(collisionCount),
-                                      str(len(tmpList))))
-
+                    line_info(' '.join(['Collisions:',
+                                        str(maxCollisions),
+                                        str(collisionCount),
+                                        str(len(tmpList))]))
                     tmpList.sort()
-                    line_info(''.join('561 length tmpList: ',
-                                      str(len(tmpList))))
                     for i in directionList:
                         if i not in tmpList:
-                            line_info(''.join('Not in tmpList: ' + str(i)))
+                            line_info(' '.join(['Not in tmpList:',
+                                                str(i)]))
                     break
 
     # #######################################
