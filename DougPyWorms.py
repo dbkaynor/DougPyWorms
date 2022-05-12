@@ -36,8 +36,13 @@ import pprint
 
 # Clear the terminal at progarm startup
 os.system('cls||clear')
-
 pp = pprint.PrettyPrinter(indent=4)
+
+def line_info(message):
+    f = inspect.currentframe()
+    i = inspect.getframeinfo(f.f_back)
+    print(f"{os.path.basename(i.filename)}:{i.lineno}  called from {i.function}  {message}")
+
 
 if platform.system() == "Windows":
     os.environ["SDL_VIDEODRIVER"] = "windib"
@@ -53,7 +58,7 @@ elif platform.system() == "OS X":
     screenPosVertical = 0
     screenPosHorizontal = 0
 else:
-    print("52 Unknown platform: " + platform.system())
+    line_info(''.join(["Unknown platform: ", platform.system()]))
 
 screen = 0
 tkRoot = 0
@@ -62,7 +67,7 @@ pygame.display.init()
 # https://www.pygame.org/docs/ref/event.html
 for event in pygame.event.get():
     if event.type == pygame.WINDOWRESIZED:
-        print('61 resize')
+        line_info('resize event')
 
 
 def setUp():
@@ -100,12 +105,6 @@ def setUp():
     worms.colorList = list(colorKeys)
 
 
-def line_info(message):
-    f = inspect.currentframe()
-    i = inspect.getframeinfo(f.f_back)
-    print(f"{os.path.basename(i.filename)}:{i.lineno}  called from {i.function}  {message}")
-
-
 class worms:
     tkRoot = tkinter.Tk()
     infoLabelVar = tkinter.StringVar()
@@ -135,7 +134,7 @@ class worms:
 
         pygame.event.pump()
         # event = pygame.event.wait()
-        # print('127 event: ', str(event))
+        # line_info(''.join(['vent: ', str(event)]))
 
         geometry = "".join(
             [
@@ -154,7 +153,7 @@ class worms:
         worms.tkRoot.title("Draw some worms")
         main_dialog = tkinter.Frame(worms.tkRoot)
         main_dialog.pack(side=tkinter.TOP, fill=tkinter.X)
-        print("146 dirname:    ", os.path.dirname(__file__))
+        line_info(''.join(["dirname:    ", os.path.dirname(__file__)]))
         image = tkinter.PhotoImage(
             file="".join([os.path.dirname(__file__), os.sep, "worm.png"])
         )
@@ -246,7 +245,7 @@ class worms:
             bg="white",
             onvalue=True,
             offvalue=False,
-            command=lambda: print("Clear before draw"),
+            command=lambda: line_info("Clear before draw"),
             variable=worms.clearBeforeDrawCheckButtonVar
         )
         clearBeforeDrawCheckButton.pack(side=tkinter.TOP, anchor=tkinter.W)
@@ -260,7 +259,7 @@ class worms:
             bg="white",
             onvalue=True,
             offvalue=False,
-            command=lambda: print("Random foreground color"),
+            command=lambda: line_info("Random foreground color"),
             variable=worms.foregroundColorRandomCheckButtonVar
         )
         foregroundColorRandomCheckButton.pack(side=tkinter.TOP, anchor=tkinter.W)
@@ -274,7 +273,7 @@ class worms:
             bg="white",
             onvalue=True,
             offvalue=False,
-            command=lambda: print("Random background color"),
+            command=lambda: line_info("Random background color"),
             variable=worms.backgroundColorRandomCheckButtonVar
         )
         backgroundColorRandomCheckButton.pack(side=tkinter.TOP, anchor=tkinter.W)
@@ -288,13 +287,13 @@ class worms:
             bg="white",
             onvalue=True,
             offvalue=False,
-            command=lambda: print("Wrap (no walls)"),
+            command=lambda: line_info("Wrap (no walls)"),
             variable=worms.wrapCheckButtonVar
         )
         wrapCheckButton.pack(
             side=tkinter.TOP, anchor=tkinter.W)
         ToolTip(wrapCheckButton, text="Wrap (no walls)")
-        worms.wrapCheckButtonVar.set(True)
+        worms.wrapCheckButtonVar.set(False)
         # #######################################
         showTextCheckButton = tkinter.Checkbutton(
             checkButtonFrame,
@@ -303,7 +302,7 @@ class worms:
             bg="white",
             onvalue=True,
             offvalue=False,
-            command=lambda: print("Show text"),
+            command=lambda: line_info("Show text"),
             variable=worms.showTextCheckButtonVar
         )
         showTextCheckButton.pack(
@@ -326,7 +325,7 @@ class worms:
             bg="white",
             text="Never change color",
             value=0,
-            command=lambda: print("Never change color"),
+            command=lambda: line_info("Never change color"),
             variable=worms.colorPatternRadioVar
         )
         colorPatternRadio0.pack(side=tkinter.TOP, anchor=tkinter.W)
@@ -338,7 +337,7 @@ class worms:
             bg="white",
             text="Change color every step",
             value=1,
-            command=lambda: print("Change color every step"),
+            command=lambda: line_info("Change color every step"),
             variable=worms.colorPatternRadioVar
         )
         colorPatternRadio1.pack(side=tkinter.TOP, anchor=tkinter.W)
@@ -350,7 +349,7 @@ class worms:
             bg="white",
             text="Change forground color every corner",
             value=2,
-            command=lambda: print("Change forground color every corner"),
+            command=lambda: line_info("Change forground color every corner"),
             variable=worms.colorPatternRadioVar
         )
         colorPatternRadio2.pack(side=tkinter.TOP, anchor=tkinter.W)
@@ -362,7 +361,7 @@ class worms:
             bg="white",
             text="Change foreground color after collision",
             value=3,
-            command=lambda: print("Change foreground color after collision"),
+            command=lambda: line_info("Change foreground color after collision"),
             variable=worms.colorPatternRadioVar
         )
         colorPatternRadio3.pack(side=tkinter.TOP, anchor=tkinter.W)
@@ -485,7 +484,7 @@ class worms:
 
         # ----------------------
         def calculateMove():
-            # print('416 clock.tick: ', str(clock.tick(60)))
+            # (line_info('clock.tick: ', str(clock.tick(60)))
             if direction == 'N' or direction == 'NE' or direction == 'NW':
                 worms.player.bottom -= worms.blockSizeVar.get()  # Going up (North)
             if direction == 'S' or direction == 'SE' or direction == 'SW':
@@ -499,10 +498,10 @@ class worms:
         # Start drawWorms here
 
         worms.physicalScreenWidth, worms.physicalScreenHeight = screen.get_size()
-        print('431 physical:', worms.physicalScreenWidth, worms.physicalScreenHeight)
+        line_info(' '.join(['physical:', worms.physicalScreenWidth, worms.physicalScreenHeight]))
         worms.virtualScreenWidth = int(worms.physicalScreenWidth / worms.blockSizeVar.get()) * worms.blockSizeVar.get()
         worms.virtualScreenHeight = int(worms.physicalScreenHeight / worms.blockSizeVar.get()) * worms.blockSizeVar.get()
-        print('434 virtual:', worms.virtualScreenWidth, worms.virtualScreenHeight)
+        line_info(' '.join(['virtual:', worms.virtualScreenWidth, worms.virtualScreenHeight]))
 
         worms.rectangle_list = []
         collided = False
@@ -526,7 +525,7 @@ class worms:
             yy = int(worms.virtualScreenHeight / worms.blockSizeVar.get()) * worms.blockSizeVar.get()
             verticalPosition = random.randrange(OFFSET, yy - OFFSET, worms.blockSizeVar.get())
         except Exception as e:
-            print(' '.join([str(e), '458 block size versus screen size.']))
+            line_info(' '.join([str(e), 'block size versus screen size.']))
             horizontalPosition = 10
             verticalPosition = 10
 
@@ -571,14 +570,15 @@ class worms:
                 # 1 Change color every step
                 # 2 Change color every corner
                 # 3 Change foreground color after collision
+                color = 0
                 if worms.colorPatternRadioVar.get() == 0:
                     color = worms.foregroundColor
                 elif worms.colorPatternRadioVar.get() == 1:
                     colorListValue = random.randrange(0, len(worms.colorList))
                     color = worms.colorList[colorListValue]
                 else:
-                    print('?????')
-                print(color, worms.colorPatternRadioVar.get())
+                    line_info('?????')
+                line_info(''.join([color, worms.colorPatternRadioVar.get()]))
                 pygame.draw.rect(screen, color, worms.player)
                 pygame.display.flip()
                 collisionCount = 0
@@ -587,7 +587,12 @@ class worms:
             else:  # A collision occurred
                 worms.player = Rect((int(saveLeft), int(saveTop)),
                                     (worms.blockSizeVar.get(), worms.blockSizeVar.get()))
-                pygame.draw.rect(screen, 'pink', worms.player)  # This is a collision point
+                if worms.colorPatternRadioVar.get() == 2:
+                    pygame.draw.rect(screen, 'pink', worms.player)  # This is a collision point
+                # Change color every corner if needed
+                if worms.colorPatternRadioVar.get() == 3:
+                    colorListValue = random.randrange(0, len(worms.colorList))
+                    worms.foregroundColor = worms.colorList[colorListValue]
                 pygame.display.flip()
                 directionList = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW']
                 if collisionCount < maxCollisions:
@@ -596,7 +601,7 @@ class worms:
                 else:
                     direction = directionList[5]
                 collided = False
-                # print('534 ', len(tmpList))
+                line_info(' '.join(['length tmpList', len(tmpList)]))
                 collisionCount += 1
                 if collisionCount >= maxCollisions:
                     pygame.draw.rect(screen, 'yellow', worms.player)  # This is the very last collision point
