@@ -38,6 +38,7 @@ import pprint
 os.system('cls||clear')
 pp = pprint.PrettyPrinter(indent=4)
 
+
 def line_info(message):
     f = inspect.currentframe()
     i = inspect.getframeinfo(f.f_back)
@@ -58,7 +59,7 @@ elif platform.system() == "OS X":
     screenPosVertical = 0
     screenPosHorizontal = 0
 else:
-    line_info(''.join(["Unknown platform: ", platform.system()]))
+    line_info(' '.join(["Unknown platform:", platform.system()]))
 
 screen = 0
 tkRoot = 0
@@ -109,7 +110,6 @@ class worms:
     tkRoot = tkinter.Tk()
     infoLabelVar = tkinter.StringVar()
     clearBeforeDrawCheckButtonVar = tkinter.BooleanVar()
-    foregroundColorRandomCheckButtonVar = tkinter.BooleanVar()
     backgroundColorRandomCheckButtonVar = tkinter.BooleanVar()
     wrapCheckButtonVar = tkinter.BooleanVar()
     showTextCheckButtonVar = tkinter.BooleanVar()
@@ -252,20 +252,6 @@ class worms:
         ToolTip(clearBeforeDrawCheckButton, "Clear Before Draw")
         worms.clearBeforeDrawCheckButtonVar.set(True)
         # #######################################
-        foregroundColorRandomCheckButton = tkinter.Checkbutton(
-            checkButtonFrame,
-            text="Random foreground color",
-            fg="blue",
-            bg="white",
-            onvalue=True,
-            offvalue=False,
-            command=lambda: line_info("Random foreground color"),
-            variable=worms.foregroundColorRandomCheckButtonVar
-        )
-        foregroundColorRandomCheckButton.pack(side=tkinter.TOP, anchor=tkinter.W)
-        ToolTip(foregroundColorRandomCheckButton, text="Random foreground color")
-        worms.foregroundColorRandomCheckButtonVar.set(False)
-        # #######################################
         backgroundColorRandomCheckButton = tkinter.Checkbutton(
             checkButtonFrame,
             text="Random background color",
@@ -335,37 +321,49 @@ class worms:
             radioButtonFrame,
             fg="blue",
             bg="white",
-            text="Change color every step",
+            text="Random color each run",
             value=1,
-            command=lambda: line_info("Change color every step"),
+            command=lambda: line_info("Random color each run"),
             variable=worms.colorPatternRadioVar
         )
         colorPatternRadio1.pack(side=tkinter.TOP, anchor=tkinter.W)
-        ToolTip(colorPatternRadio1, "Change color every step.")
+        ToolTip(colorPatternRadio1, "Random color each run.")
         # #######################################
         colorPatternRadio2 = tkinter.Radiobutton(
             radioButtonFrame,
             fg="blue",
             bg="white",
-            text="Change forground color every corner",
+            text="Change color every step",
             value=2,
-            command=lambda: line_info("Change forground color every corner"),
+            command=lambda: line_info("Change color every step"),
             variable=worms.colorPatternRadioVar
         )
         colorPatternRadio2.pack(side=tkinter.TOP, anchor=tkinter.W)
-        ToolTip(colorPatternRadio2, "Change forground color every corner.")
+        ToolTip(colorPatternRadio2, "Change color every step.")
         # #######################################
         colorPatternRadio3 = tkinter.Radiobutton(
             radioButtonFrame,
             fg="blue",
             bg="white",
-            text="Change foreground color after collision",
+            text="Change forground color every corner",
             value=3,
-            command=lambda: line_info("Change foreground color after collision"),
+            command=lambda: line_info("Change forground color every corner"),
             variable=worms.colorPatternRadioVar
         )
         colorPatternRadio3.pack(side=tkinter.TOP, anchor=tkinter.W)
-        ToolTip(colorPatternRadio3, "Change foreground color after collision.")
+        ToolTip(colorPatternRadio3, "Change forground color every corner.")
+        # #######################################
+        colorPatternRadio4 = tkinter.Radiobutton(
+            radioButtonFrame,
+            fg="blue",
+            bg="white",
+            text="Change foreground color after collision",
+            value=4,
+            command=lambda: line_info("Change foreground color after collision"),
+            variable=worms.colorPatternRadioVar
+        )
+        colorPatternRadio4.pack(side=tkinter.TOP, anchor=tkinter.W)
+        ToolTip(colorPatternRadio4, "Change foreground color after collision.")
         worms.colorPatternRadioVar.set(0)
         # #######################################
         speedSelect = tkinter.Scale(
@@ -498,10 +496,10 @@ class worms:
         # Start drawWorms here
 
         worms.physicalScreenWidth, worms.physicalScreenHeight = screen.get_size()
-        line_info(' '.join(['physical:', worms.physicalScreenWidth, worms.physicalScreenHeight]))
+        line_info(' '.join(['physical:', str(worms.physicalScreenWidth), str(worms.physicalScreenHeight)]))
         worms.virtualScreenWidth = int(worms.physicalScreenWidth / worms.blockSizeVar.get()) * worms.blockSizeVar.get()
         worms.virtualScreenHeight = int(worms.physicalScreenHeight / worms.blockSizeVar.get()) * worms.blockSizeVar.get()
-        line_info(' '.join(['virtual:', worms.virtualScreenWidth, worms.virtualScreenHeight]))
+        line_info(' '.join(['virtual:', str(worms.virtualScreenWidth), str(worms.virtualScreenHeight)]))
 
         worms.rectangle_list = []
         collided = False
@@ -512,7 +510,7 @@ class worms:
         if worms.backgroundColorRandomCheckButtonVar.get():
             worms.randomBackgroundColor()
 
-        if worms.foregroundColorRandomCheckButtonVar.get():
+        if worms.colorPatternRadioVar.get() == 1:
             color = random.randrange(0, len(worms.colorList))
             worms.foregroundColor = worms.colorList[color]
 
@@ -571,14 +569,14 @@ class worms:
                 # 2 Change color every corner
                 # 3 Change foreground color after collision
                 color = 0
-                if worms.colorPatternRadioVar.get() == 0:
+                if worms.colorPatternRadioVar.get() == 1:
                     color = worms.foregroundColor
-                elif worms.colorPatternRadioVar.get() == 1:
+                elif worms.colorPatternRadioVar.get() == 2:
                     colorListValue = random.randrange(0, len(worms.colorList))
                     color = worms.colorList[colorListValue]
                 else:
                     line_info('?????')
-                line_info(''.join([color, worms.colorPatternRadioVar.get()]))
+                line_info(' '.join([str(colorListValue), str(color), str(worms.colorPatternRadioVar.get())]))
                 pygame.draw.rect(screen, color, worms.player)
                 pygame.display.flip()
                 collisionCount = 0
@@ -590,7 +588,7 @@ class worms:
                 if worms.colorPatternRadioVar.get() == 2:
                     pygame.draw.rect(screen, 'pink', worms.player)  # This is a collision point
                 # Change color every corner if needed
-                if worms.colorPatternRadioVar.get() == 3:
+                if worms.colorPatternRadioVar.get() == 4:
                     colorListValue = random.randrange(0, len(worms.colorList))
                     worms.foregroundColor = worms.colorList[colorListValue]
                 pygame.display.flip()
@@ -601,7 +599,7 @@ class worms:
                 else:
                     direction = directionList[5]
                 collided = False
-                line_info(' '.join(['length tmpList', len(tmpList)]))
+                line_info(' '.join(['length tmpList', str(len(tmpList))]))
                 collisionCount += 1
                 if collisionCount >= maxCollisions:
                     pygame.draw.rect(screen, 'yellow', worms.player)  # This is the very last collision point
