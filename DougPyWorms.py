@@ -16,8 +16,8 @@
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 # https://www.pygame.org/docs/
+# https://www.w3schools.com/python/
 
-# from fileinput import lineno
 import os
 import sys
 import platform
@@ -25,6 +25,7 @@ import random
 import time
 import tkinter
 from tkinter.colorchooser import askcolor
+from xml.dom.expatbuilder import parseString
 import pygame
 from pygame.locals import Rect
 # from screeninfo import get_monitors
@@ -160,6 +161,8 @@ class worms:
         worms.tkRoot.iconphoto(True, image)
         setUp()
         # #######################################
+        # line_info(str(infoLabel))
+        # #######################################
         infoLabel = tkinter.Label(
             worms.tkRoot,
             textvariable=worms.infoLabelVar,
@@ -170,6 +173,8 @@ class worms:
         infoLabel.pack(side=tkinter.TOP, anchor=tkinter.W, fill=tkinter.X)
         worms.infoLabelVar.set('Draw some worms')
         ToolTip(infoLabel, text="Display information about program")
+        # #######################################
+        line_info(str(infoLabel))
         # #######################################
         drawWormsButton = tkinter.Button(
             worms.tkRoot,
@@ -345,13 +350,13 @@ class worms:
             radioButtonFrame,
             fg="blue",
             bg="white",
-            text="Change forground color every corner",
+            text="Change foreground color every corner",
             value=3,
-            command=lambda: line_info("Change forground color every corner"),
+            command=lambda: line_info("Change foreground color every corner"),
             variable=worms.colorPatternRadioVar
         )
         colorPatternRadio3.pack(side=tkinter.TOP, anchor=tkinter.W)
-        ToolTip(colorPatternRadio3, "Change forground color every corner.")
+        ToolTip(colorPatternRadio3, "Change foreground color every corner.")
         # #######################################
         colorPatternRadio4 = tkinter.Radiobutton(
             radioButtonFrame,
@@ -563,17 +568,24 @@ class worms:
             calculateMove()
             (collided, message) = didCollisionHappen()
             if not collided:  # Continue on moving
-                # Now we handle the color options
                 # 0 Never change color
-                # 1 Change color every step
-                # 2 Change color every corner
-                # 3 Change foreground color after collision
+                # 1 Random color each run
+                # 2 Change color every step
+                # 3 Change color every corner
+                # 4 Change foreground color after collision
                 color = 0
-                if worms.colorPatternRadioVar.get() == 1:
+                colorListValue = 0
+                if worms.colorPatternRadioVar.get() == 0:
+                    color = worms.foregroundColor
+                elif worms.colorPatternRadioVar.get() == 1:
                     color = worms.foregroundColor
                 elif worms.colorPatternRadioVar.get() == 2:
                     colorListValue = random.randrange(0, len(worms.colorList))
                     color = worms.colorList[colorListValue]
+                elif worms.colorPatternRadioVar.get() == 3:
+                    color = worms.foregroundColor
+                elif worms.colorPatternRadioVar.get() == 4:
+                    color = worms.foregroundColor
                 else:
                     line_info('?????')
                 line_info(' '.join([str(colorListValue), str(color), str(worms.colorPatternRadioVar.get())]))
@@ -599,7 +611,7 @@ class worms:
                 else:
                     direction = directionList[5]
                 collided = False
-                line_info(' '.join(['length tmpList', str(len(tmpList))]))
+                # line_info(' '.join(['length tmpList', str(len(tmpList))]))
                 collisionCount += 1
                 if collisionCount >= maxCollisions:
                     pygame.draw.rect(screen, 'yellow', worms.player)  # This is the very last collision point

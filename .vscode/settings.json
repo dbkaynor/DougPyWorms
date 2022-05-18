@@ -4,6 +4,7 @@
         "continuously",
         "dbkaynor",
         "gorx",
+        "idletasks",
         "Initializing",
         "Kaynor",
         "MOBL",
@@ -26,5 +27,8 @@
     ],
     "python.linting.enabled": true,
     "files.autoSave": "afterDelay",
-    "diffEditor.codeLens": true
+    "diffEditor.codeLens": true,
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.python"
+    }
 }
