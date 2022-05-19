@@ -25,7 +25,7 @@ import random
 import time
 import tkinter
 from tkinter.colorchooser import askcolor
-from xml.dom.expatbuilder import parseString
+
 import pygame
 from pygame.locals import Rect
 # from screeninfo import get_monitors
@@ -35,15 +35,24 @@ from ToolTip import ToolTip
 import inspect
 import pprint
 
-# Clear the terminal at progarm startup
+# Clear the terminal at program startup
 os.system('cls||clear')
 pp = pprint.PrettyPrinter(indent=4)
 
+debugFile = "DougPyWorms.txt"
+if os.path.exists(debugFile):
+    os.remove(debugFile)
 
-def line_info(message):
+
+def line_info(message="nothing", show='true'):
     f = inspect.currentframe()
     i = inspect.getframeinfo(f.f_back)
-    print(f"{os.path.basename(i.filename)}:{i.lineno}  called from {i.function}  {message}")
+    xxx = f"{os.path.basename(i.filename)}:{i.lineno}  called from {i.function}  {message}\n"
+    file1 = open(debugFile, "a")
+    file1.write(xxx)
+    file1.close()
+    if show:
+        print(xxx)
 
 
 if platform.system() == "Windows":
@@ -76,11 +85,6 @@ def setUp():
     # worms.guiDisable("tkinter.disabled")
     global screen
     global tkRoot
-
-    debugFile = "DougPyWorms.txt"
-    if os.path.exists(debugFile):
-        os.remove(debugFile)
-
     os.environ["SDL_VIDEO_WINDOW_POS"] = "%i, %i" % (
         screenPosHorizontal,
         screenPosVertical
@@ -422,6 +426,7 @@ class worms:
     def quitProgram():
         pygame.display.quit
         pygame.quit()
+        line_info('we are quitting')
         sys.exit(0)
 
     # #######################################
@@ -588,7 +593,7 @@ class worms:
                     color = worms.foregroundColor
                 else:
                     line_info('?????')
-                line_info(' '.join([str(colorListValue), str(color), str(worms.colorPatternRadioVar.get())]))
+                # line_info(' '.join([str(colorListValue), str(color), str(worms.colorPatternRadioVar.get())]))
                 pygame.draw.rect(screen, color, worms.player)
                 pygame.display.flip()
                 collisionCount = 0
@@ -599,6 +604,9 @@ class worms:
                                     (worms.blockSizeVar.get(), worms.blockSizeVar.get()))
                 if worms.colorPatternRadioVar.get() == 2:
                     pygame.draw.rect(screen, 'pink', worms.player)  # This is a collision point
+                if worms.colorPatternRadioVar.get() == 3:
+                    # line_info("worms.colorPatternRadioVar.get() == 3:")
+                    pygame.draw.rect(screen, 'white', worms.player)
                 # Change color every corner if needed
                 if worms.colorPatternRadioVar.get() == 4:
                     colorListValue = random.randrange(0, len(worms.colorList))

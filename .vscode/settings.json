@@ -1,7 +1,7 @@
 {
     "cSpell.words": [
         "blit",
-        "continuously",
+        "COMPUTERNAME",
         "dbkaynor",
         "gorx",
         "idletasks",
@@ -11,7 +11,12 @@
         "onvalue",
         "pyautogui",
         "pygame",
-        "vertical"
+        "screeninfo",
+        "textvariable",
+        "THECOLORS",
+        "VIDEODRIVER",
+        "windib",
+        "WINDOWRESIZED"
     ],
     "editor.fontSize": 12,
     "editor.renderWhitespace": "all",
@@ -30,5 +35,8 @@
     "diffEditor.codeLens": true,
     "[python]": {
         "editor.defaultFormatter": "ms-python.python"
+    },
+    "files.associations": {
+        "*.jpg": "\"C:\\Program Files\\IrfanView\\i_view64.exe\""
     }
 }
