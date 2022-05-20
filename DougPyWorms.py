@@ -25,7 +25,7 @@ import random
 import time
 import tkinter
 from tkinter.colorchooser import askcolor
-
+import datetime
 import pygame
 from pygame.locals import Rect
 # from screeninfo import get_monitors
@@ -44,7 +44,7 @@ if os.path.exists(debugFile):
     os.remove(debugFile)
 
 
-def line_info(message="nothing", show='true'):
+def line_info(message="nothing", show=False):
     f = inspect.currentframe()
     i = inspect.getframeinfo(f.f_back)
     xxx = f"{os.path.basename(i.filename)}:{i.lineno}  called from {i.function}  {message}\n"
@@ -85,6 +85,7 @@ def setUp():
     # worms.guiDisable("tkinter.disabled")
     global screen
     global tkRoot
+    line_info('Starting ' + str(datetime.datetime.now()), True)
     os.environ["SDL_VIDEO_WINDOW_POS"] = "%i, %i" % (
         screenPosHorizontal,
         screenPosVertical
@@ -110,6 +111,11 @@ def setUp():
     colorKeys = pygame.color.THECOLORS.keys()
     worms.colorList = list(colorKeys)
 
+def quitProgram():
+    pygame.display.quit
+    pygame.quit()
+    line_info('We are quitting ' + str(datetime.datetime.now()), True)
+    sys.exit(0)
 
 class worms:
     tkRoot = tkinter.Tk()
@@ -122,7 +128,7 @@ class worms:
     speedVar = tkinter.IntVar()
     colorPatternRadioVar = tkinter.IntVar()
     menuWidth = 250
-    menuHeight = 500
+    menuHeight = 550
     physicalScreenWidth = 417
     virtualScreenWidth = 0
     physicalScreenHeight = 253
@@ -178,7 +184,7 @@ class worms:
         worms.infoLabelVar.set('Draw some worms')
         ToolTip(infoLabel, text="Display information about program")
         # #######################################
-        line_info(str(infoLabel))
+        line_info(str(worms.infoLabelVar.get()))
         # #######################################
         drawWormsButton = tkinter.Button(
             worms.tkRoot,
@@ -354,13 +360,13 @@ class worms:
             radioButtonFrame,
             fg="blue",
             bg="white",
-            text="Change foreground color every corner",
+            text="Change color of collision point",
             value=3,
-            command=lambda: line_info("Change foreground color every corner"),
+            command=lambda: line_info("Change color of collision point"),
             variable=worms.colorPatternRadioVar
         )
         colorPatternRadio3.pack(side=tkinter.TOP, anchor=tkinter.W)
-        ToolTip(colorPatternRadio3, "Change foreground color every corner.")
+        ToolTip(colorPatternRadio3, "Change color of collision point.")
         # #######################################
         colorPatternRadio4 = tkinter.Radiobutton(
             radioButtonFrame,
@@ -413,7 +419,7 @@ class worms:
             fg="blue",
             bg="white",
             width=20,
-            command=worms.quitProgram
+            command=quitProgram
         )
         quitButton.pack(side=tkinter.TOP, anchor=tkinter.W, fill=tkinter.X)
         ToolTip(quitButton, text="Quit the program")
@@ -422,12 +428,15 @@ class worms:
         worms.tkRoot.after(500, worms.clearDisplay)
         worms.tkRoot.mainloop()
 
-    # #######################################
-    def quitProgram():
-        pygame.display.quit
-        pygame.quit()
-        line_info('we are quitting')
-        sys.exit(0)
+        for event in pygame.event.get():
+            if event.type == pygame.locals.QUIT:
+                quitProgram()
+                """
+                pygame.display.quit
+                pygame.quit()
+                line_info('We are quitting ' + str(datetime.datetime.now()), True)
+                sys.exit(0)
+                 """
 
     # #######################################
     def drawScreenText(infoString, virtualScreenWidth, virtualScreenHeight):
@@ -618,6 +627,7 @@ class worms:
                     tmpList.append(direction)
                 else:
                     direction = directionList[5]
+                    print()
                 collided = False
                 # line_info(' '.join(['length tmpList', str(len(tmpList))]))
                 collisionCount += 1
