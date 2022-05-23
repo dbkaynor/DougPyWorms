@@ -25,6 +25,7 @@ import random
 import time
 import tkinter
 from tkinter.colorchooser import askcolor
+from tkinter import messagebox
 import datetime
 import pygame
 from pygame.locals import Rect
@@ -47,12 +48,12 @@ if os.path.exists(debugFile):
 def line_info(message="nothing", show=False):
     f = inspect.currentframe()
     i = inspect.getframeinfo(f.f_back)
-    xxx = f"{os.path.basename(i.filename)}:{i.lineno}  called from {i.function}  {message}\n"
+    tString = f"{os.path.basename(i.filename)}:{i.lineno}  called from {i.function}  {message}\n"
     file1 = open(debugFile, "a")
-    file1.write(xxx)
+    file1.write(tString)
     file1.close()
     if show:
-        print(xxx)
+        print(tString)
 
 
 if platform.system() == "Windows":
@@ -60,7 +61,7 @@ if platform.system() == "Windows":
 
 # This positioning is for testing purposes on specific systems
 if os.getenv("COMPUTERNAME") == 'DBKAYNOX-MOBL4':
-    screenPosVertical = -550
+    screenPosVertical = -600
     screenPosHorizontal = 250
 elif platform.system() == "Linux":
     screenPosVertical = 0
@@ -79,6 +80,23 @@ pygame.display.init()
 for event in pygame.event.get():
     if event.type == pygame.WINDOWRESIZED:
         line_info('resize event')
+
+
+def about():
+    messagebox.showinfo('About TkWorms',
+                        os.linesep.join([' '.join(['Start directory: ',
+                                                   os.getcwd()]),
+                                         ' '.join(['Geometry:',
+                                                   tkRoot.geometry()]),
+                                         ' '.join(['Screen size:',
+                                                   str(tkRoot.winfo_screenwidth()),
+                                                   'x',
+                                                   str(tkRoot.winfo_screenheight())]),
+                                         ' '.join(['Python version:',
+                                                   platform.python_version()]),
+                                         ' '.join(['Platform:',
+                                                   platform.platform()])
+                                         ]))
 
 
 def setUp():
@@ -111,13 +129,17 @@ def setUp():
     colorKeys = pygame.color.THECOLORS.keys()
     worms.colorList = list(colorKeys)
 
+
 def quitProgram():
     pygame.display.quit
     pygame.quit()
     line_info('We are quitting ' + str(datetime.datetime.now()), True)
     sys.exit(0)
 
+
 class worms:
+    global screen
+    global tkRoot
     tkRoot = tkinter.Tk()
     infoLabelVar = tkinter.StringVar()
     clearBeforeDrawCheckButtonVar = tkinter.BooleanVar()
@@ -142,6 +164,8 @@ class worms:
     def main():
         global screenPosVertical
         global screenPosHorizontal
+        global screen
+        global tkRoot
 
         pygame.event.pump()
         # event = pygame.event.wait()
@@ -159,22 +183,22 @@ class worms:
             ]
         )
 
-        worms.tkRoot.geometry(geometry)
-        worms.tkRoot.resizable(height=False, width=False)
-        worms.tkRoot.title("Draw some worms")
-        main_dialog = tkinter.Frame(worms.tkRoot)
+        tkRoot.geometry(geometry)
+        tkRoot.resizable(height=False, width=False)
+        tkRoot.title("Draw some worms")
+        main_dialog = tkinter.Frame(tkRoot)
         main_dialog.pack(side=tkinter.TOP, fill=tkinter.X)
         line_info(''.join(["dirname:    ", os.path.dirname(__file__)]))
         image = tkinter.PhotoImage(
             file="".join([os.path.dirname(__file__), os.sep, "worm.png"])
         )
-        worms.tkRoot.iconphoto(True, image)
+        tkRoot.iconphoto(True, image)
         setUp()
         # #######################################
         # line_info(str(infoLabel))
         # #######################################
         infoLabel = tkinter.Label(
-            worms.tkRoot,
+            tkRoot,
             textvariable=worms.infoLabelVar,
             text="Clear",
             fg="green",
@@ -187,7 +211,7 @@ class worms:
         line_info(str(worms.infoLabelVar.get()))
         # #######################################
         drawWormsButton = tkinter.Button(
-            worms.tkRoot,
+            tkRoot,
             text="Draw",
             fg="blue",
             bg="white",
@@ -198,7 +222,7 @@ class worms:
         ToolTip(drawWormsButton, text="Draw worms")
         # #######################################
         clearScreenButton = tkinter.Button(
-            worms.tkRoot,
+            tkRoot,
             text="Clear",
             fg="blue",
             bg="white",
@@ -209,7 +233,7 @@ class worms:
         ToolTip(clearScreenButton, text="Clear display")
         # #######################################
         selectScreenFillButton = tkinter.Button(
-            worms.tkRoot,
+            tkRoot,
             text="Select background color",
             fg="blue",
             bg="white",
@@ -220,7 +244,7 @@ class worms:
         ToolTip(selectScreenFillButton, text="Select background color")
         # #######################################
         randomScreenFillButton = tkinter.Button(
-            worms.tkRoot,
+            tkRoot,
             text="Random background color",
             fg="blue",
             bg="white",
@@ -231,7 +255,7 @@ class worms:
         ToolTip(randomScreenFillButton, text="Random background color")
         # #######################################
         selectForegroundColorButton = tkinter.Button(
-            worms.tkRoot,
+            tkRoot,
             text="Select foreground color",
             fg="blue",
             bg="white",
@@ -244,7 +268,7 @@ class worms:
         ToolTip(selectForegroundColorButton, text="Select foreground color")
         # #######################################
         checkButtonFrame = tkinter.Frame(
-            worms.tkRoot,
+            tkRoot,
             bg="white",
             width=20,
             highlightbackground="black",
@@ -312,7 +336,7 @@ class worms:
         worms.showTextCheckButtonVar.set(True)
         # #######################################
         radioButtonFrame = tkinter.Frame(
-            worms.tkRoot,
+            tkRoot,
             bg="white",
             width=20,
             highlightbackground="black",
@@ -382,7 +406,7 @@ class worms:
         worms.colorPatternRadioVar.set(0)
         # #######################################
         speedSelect = tkinter.Scale(
-            worms.tkRoot,
+            tkRoot,
             fg="blue",
             bg="white",
             label="Speed",
@@ -398,7 +422,7 @@ class worms:
         worms.speedVar.set(5)
         # #######################################
         blockSize = tkinter.Scale(
-            worms.tkRoot,
+            tkRoot,
             fg="blue",
             bg="white",
             label="Block size",
@@ -414,7 +438,7 @@ class worms:
         worms.blockSizeVar.set(10)
         # #######################################
         quitButton = tkinter.Button(
-            worms.tkRoot,
+            tkRoot,
             text="Quit",
             fg="blue",
             bg="white",
@@ -424,9 +448,22 @@ class worms:
         quitButton.pack(side=tkinter.TOP, anchor=tkinter.W, fill=tkinter.X)
         ToolTip(quitButton, text="Quit the program")
         # #######################################
+        aboutButton = tkinter.Button(
+            tkRoot,
+            text="About",
+            fg="blue",
+            bg="white",
+            width=20,
+            command=about
+        )
 
-        worms.tkRoot.after(500, worms.clearDisplay)
-        worms.tkRoot.mainloop()
+        aboutButton.pack(side=tkinter.TOP, anchor=tkinter.W, fill=tkinter.X)
+        ToolTip(aboutButton, text="About the program")
+
+        # #######################################
+
+        tkRoot.after(500, worms.clearDisplay)
+        tkRoot.mainloop()
 
         for event in pygame.event.get():
             if event.type == pygame.locals.QUIT:
@@ -564,7 +601,7 @@ class worms:
         worms.infoLabelVar.set(' '.join([infoString,
                                          worms.foregroundColor,
                                          worms.backgroundColor]))
-        worms.tkRoot.update_idletasks()
+        tkRoot.update_idletasks()
 
         if worms.showTextCheckButtonVar.get():
             worms.drawScreenText(infoString,
