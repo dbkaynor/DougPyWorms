@@ -71,6 +71,7 @@ elif platform.system() == "OS X":
     screenPosHorizontal = 0
 else:
     line_info(' '.join(["Unknown platform:", platform.system()]))
+    exit()
 
 screen = 0
 tkRoot = 0
