@@ -493,6 +493,8 @@ class worms:
         infoText = infoFont.render(infoString, True, fontColor)
         fgText = infoFont.render(worms.foregroundColor, True, fontColor)
         bgText = infoFont.render(worms.backgroundColor, True, fontColor)
+        size = ' '.join([str(virtualScreenWidth), str(virtualScreenHeight)])
+        sizeText = infoFont.render(size, True, fontColor)
 
         screen.blit(northText, (virtualScreenWidth / 2, 10))
         screen.blit(southText, (virtualScreenWidth / 2, virtualScreenHeight - 30))
@@ -501,6 +503,7 @@ class worms:
         screen.blit(infoText, (virtualScreenWidth / 2 - 35, virtualScreenHeight / 2 - 10))
         screen.blit(bgText, (virtualScreenWidth / 2 - 35, virtualScreenHeight / 2 - 35))
         screen.blit(fgText, (virtualScreenWidth / 2 - 35, virtualScreenHeight / 2 - 60))
+        screen.blit(sizeText, (virtualScreenWidth / 2 - 35, virtualScreenHeight / 2 - 85))
         pygame.display.flip
 
     # #######################################
