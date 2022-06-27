@@ -108,7 +108,7 @@ def setUp():
     # worms.guiDisable("tkinter.disabled")
     global screen
     global tkRoot
-    line_info('Starting ' + str(datetime.datetime.now()), True)
+    line_info(' '.join(['Starting ', str(datetime.datetime.now())]), True)
     os.environ["SDL_VIDEO_WINDOW_POS"] = "%i, %i" % (
         screenPosHorizontal,
         screenPosVertical
@@ -138,7 +138,7 @@ def setUp():
 def quitProgram():
     pygame.display.quit
     pygame.quit()
-    line_info('We are quitting ' + str(datetime.datetime.now()), True)
+    line_info(' '.join(['We are quitting ', str(datetime.datetime.now())]), True)
     sys.exit(0)
 
 
@@ -476,7 +476,7 @@ class worms:
                 """
                 pygame.display.quit
                 pygame.quit()
-                line_info('We are quitting ' + str(datetime.datetime.now()), True)
+                line_info(' '.join(['We are quitting ', str(datetime.datetime.now())]), True)
                 sys.exit(0)
                  """
 
@@ -509,6 +509,8 @@ class worms:
     # #######################################
     def drawWorms():  # noqa: C901
         # if a collision happens, return true
+        line_info('---- Draw button was clicked ----', True)
+
         def didCollisionHappen():
             collide = worms.rectangle_list.count(str(worms.player))
             if collide != 0:
@@ -546,7 +548,7 @@ class worms:
 
         # ----------------------
         def calculateMove():
-            # (line_info('clock.tick: ', str(clock.tick(60)))
+            # line_info(' '.join(['clock.tick: ', str(clock.tick(60))]))
             if direction == 'N' or direction == 'NE' or direction == 'NW':
                 worms.player.bottom -= worms.blockSizeVar.get()  # Going up (North)
             if direction == 'S' or direction == 'SE' or direction == 'SW':
@@ -659,7 +661,6 @@ class worms:
                 if worms.colorPatternRadioVar.get() == 2:
                     pygame.draw.rect(screen, 'pink', worms.player)  # This is a collision point
                 if worms.colorPatternRadioVar.get() == 3:
-                    # line_info("worms.colorPatternRadioVar.get() == 3:")
                     pygame.draw.rect(screen, 'white', worms.player)
                 # Change color every corner if needed
                 if worms.colorPatternRadioVar.get() == 4:
