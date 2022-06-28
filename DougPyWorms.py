@@ -40,7 +40,9 @@ import pprint
 os.system('cls||clear')
 pp = pprint.PrettyPrinter(indent=4)
 
-debugFile = "DougPyWorms.txt"
+StartUpDirectory = os.path.split(sys.argv[0])[0]
+HelpFileVar = (os.path.join(StartUpDirectory, 'DougPyWorms.hlp'))
+debugFile = os.path.join(StartUpDirectory, "DougPyWorms.txt")
 if os.path.exists(debugFile):
     os.remove(debugFile)
 
@@ -84,7 +86,7 @@ for event in pygame.event.get():
 
 
 def about():
-    messagebox.showinfo('About TkWorms',
+    messagebox.showinfo('About DougPyWorms',
                         os.linesep.join([' '.join(['Start directory: ',
                                                    os.getcwd()]),
                                          ' '.join(['Script name:',
@@ -509,7 +511,7 @@ class worms:
     # #######################################
     def drawWorms():  # noqa: C901
         # if a collision happens, return true
-        line_info('---- Draw button was clicked ----', True)
+        line_info('---- Draw button was clicked ----', False)
 
         def didCollisionHappen():
             collide = worms.rectangle_list.count(str(worms.player))
