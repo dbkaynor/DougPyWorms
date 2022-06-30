@@ -41,6 +41,7 @@ os.system('cls||clear')
 pp = pprint.PrettyPrinter(indent=4)
 
 StartUpDirectory = os.path.split(sys.argv[0])[0]
+os.chdir(StartUpDirectory)
 HelpFileVar = (os.path.join(StartUpDirectory, 'DougPyWorms.hlp'))
 debugFile = os.path.join(StartUpDirectory, "DougPyWorms.txt")
 if os.path.exists(debugFile):
